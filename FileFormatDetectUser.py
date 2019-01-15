@@ -37,7 +37,7 @@ def detect():
 
                 currentZipFile = os.path.join(directory, file)
                 zipFolderName = os.path.splitext(currentZipFile)[0]
-                                        
+
                 print(file)
 
                 with ZipFile(currentZipFile, 'r') as zipArchive:
