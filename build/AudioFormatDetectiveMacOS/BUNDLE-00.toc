@@ -1,0 +1,3 @@
+([('AudioFormatDetectiveMacOS',
+   '/Users/blordnew/PycharmProjects/AudioFormatDetective/dist/AudioFormatDetectiveMacOS',
+   'EXECUTABLE')],)

@@ -2,6 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/AudioFormatDetectiveMacOS.spec" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/Analysis-00.toc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/BUNDLE-00.toc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/EXE-00.toc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/PKG-00.pkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/PKG-00.toc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/PYZ-00.pyz" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/PYZ-00.toc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/base_library.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/warn-AudioFormatDetectiveMacOS.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build/AudioFormatDetectiveMacOS/xref-AudioFormatDetectiveMacOS.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/AudioFormatDetectiveMacOS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/AudioFormatDetectiveMacOS.app/Contents/Info.plist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/AudioFormatDetectiveMacOS.app/Contents/MacOS/AudioFormatDetectiveMacOS" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dist/AudioFormatDetectiveMacOS.app/Contents/Resources/icon-windowed.icns" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FileFormatDetectUser.py" beforeDir="false" afterPath="$PROJECT_DIR$/FileFormatDetectUser.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,8 +30,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FileFormatDetectUser.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="39" column="16" lean-forward="true" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+            <state relative-caret-position="3120">
+              <caret line="208" lean-forward="true" selection-start-line="208" selection-end-line="208" />
               <folding>
                 <element signature="e#43#60#0" expanded="true" />
               </folding>
@@ -119,8 +134,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FileFormatDetectUser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="39" column="16" lean-forward="true" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+        <state relative-caret-position="3120">
+          <caret line="208" lean-forward="true" selection-start-line="208" selection-end-line="208" />
           <folding>
             <element signature="e#43#60#0" expanded="true" />
           </folding>

@@ -1,0 +1,51 @@
+
+This file lists modules PyInstaller was not able to find. This does not
+necessarily mean this module is required for running you program. Python and
+Python 3rd-party packages include a lot of conditional or optional module. For
+example the module 'ntpath' only exists on Windows, whereas the module
+'posixpath' only exists on Posix systems.
+
+Types if import:
+* top-level: imported at the top-level - look at these first
+* conditional: imported within an if-statement
+* delayed: imported from within a function
+* optional: imported within a try-except-statement
+
+IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
+           yourself tracking down the missing module. Thanks!
+
+missing module named 'multiprocessing.forking' - imported by /usr/local/lib/python3.7/site-packages/PyInstaller/loader/rthooks/pyi_rth_multiprocessing.py (optional)
+missing module named multiprocessing.get_context - imported by multiprocessing (top-level), multiprocessing.pool (top-level), multiprocessing.managers (top-level), multiprocessing.sharedctypes (top-level)
+missing module named multiprocessing.TimeoutError - imported by multiprocessing (top-level), multiprocessing.pool (top-level)
+missing module named multiprocessing.BufferTooShort - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
+missing module named multiprocessing.AuthenticationError - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
+missing module named multiprocessing.set_start_method - imported by multiprocessing (top-level), multiprocessing.spawn (top-level)
+missing module named multiprocessing.get_start_method - imported by multiprocessing (top-level), multiprocessing.spawn (top-level)
+missing module named multiprocessing.Lock - imported by multiprocessing (delayed), audiotools (delayed)
+missing module named multiprocessing.Pipe - imported by multiprocessing (delayed), audiotools (delayed)
+missing module named multiprocessing.Array - imported by multiprocessing (delayed), audiotools (delayed)
+missing module named multiprocessing.Process - imported by multiprocessing (delayed), audiotools (delayed)
+missing module named multiprocessing.cpu_count - imported by multiprocessing (conditional, optional), audiotools (conditional, optional)
+missing module named 'org.python' - imported by pickle (optional), xml.sax (delayed, conditional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+excluded module named _frozen_importlib - imported by importlib (optional), importlib.abc (optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named _frozen_importlib_external - imported by importlib._bootstrap (delayed), importlib (optional), importlib.abc (optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named _winreg - imported by platform (delayed, optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named java - imported by platform (delayed), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named 'java.lang' - imported by platform (delayed, optional), xml.sax._exceptions (conditional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named vms_lib - imported by platform (delayed, conditional, optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named winreg - imported by platform (delayed, optional), mimetypes (optional), urllib.request (delayed, conditional, optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named urllib.urlencode - imported by urllib (delayed, optional), audiotools.musicbrainz (delayed, optional), audiotools.freedb (delayed, optional)
+missing module named nt - imported by os (conditional, optional), ntpath (conditional, optional), shutil (conditional), pathlib (conditional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named msvcrt - imported by subprocess (conditional), multiprocessing.spawn (delayed, conditional), multiprocessing.popen_spawn_win32 (top-level), getpass (optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named _winapi - imported by encodings (delayed, conditional, optional), subprocess (conditional), multiprocessing.reduction (conditional), multiprocessing.connection (optional), multiprocessing.heap (conditional), multiprocessing.popen_spawn_win32 (top-level), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named org - imported by copy (optional), /Users/blordnew/PycharmProjects/AudioFormatDetective/FileFormatDetectUser.py (top-level)
+missing module named win32stat - imported by watchdog.utils (conditional)
+missing module named Queue - imported by audiotools (delayed, optional), watchdog.utils.compat (optional)
+missing module named select_backport - imported by watchdog.observers.kqueue (conditional)
+missing module named StringIO - imported by eyed3.compat (conditional)
+missing module named ConfigParser - imported by audiotools (delayed, optional), eyed3.compat (conditional)
+missing module named urllib2 - imported by audiotools.musicbrainz (delayed, optional), audiotools.coverartarchive (delayed, optional), audiotools (delayed, conditional, optional), audiotools.freedb (delayed, optional), audiotools.accuraterip (delayed, optional)
+missing module named md5 - imported by audiotools.ply.yacc (delayed, optional)
+missing module named cPickle - imported by audiotools.ply.yacc (delayed, optional)
+missing module named cStringIO - imported by cPickle (top-level)
+missing module named copy_reg - imported by cPickle (top-level), cStringIO (top-level)

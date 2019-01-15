@@ -22,8 +22,12 @@ print("")
 print("Monitoring " + AJDownloadsFolder + "...")
 
 
-def detect():
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
+
+def detect():
+    clear()
     print("")
     print("")
 
@@ -176,14 +180,13 @@ def detect():
                 print(errorWav, sampleRate, bits, channels, ch, "         ", file)
     # return
 
-#detect()
+# detect()
 
 
 class Event(LoggingEventHandler):
     def on_moved(self, event):
         print('\n' * 50)
         detect()
-
 
 
 if __name__ == "__main__":
