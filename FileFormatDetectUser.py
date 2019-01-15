@@ -37,10 +37,11 @@ def detect():
 
                 currentZipFile = os.path.join(directory, file)
                 zipFolderName = os.path.splitext(currentZipFile)[0]
-
+                                        
                 print(file)
 
                 with ZipFile(currentZipFile, 'r') as zipArchive:
+
                     # printing all the contents of the zip file
                     # zipArchive.printdir()
                     # extracting all the files
@@ -86,21 +87,21 @@ def detect():
                     print(errorMp3, sampleRate, bits, channels, "ch", vbrTrueFalse, bitRate[1], file)
                 except:
 
-                    print("                           " + file + " >>  // - switching to eyeD3 analysis")
+                    print("                              " + file + " >>switching to eyeD3")
 
                     mp3File = eyed3.load(currentFile)
                     try:
                         bitRate = mp3File.info.bit_rate
                     except:
-                        bitRate = " bitrate not found "
+                        bitRate = ""
                     try:
                         sampleRate = mp3File.info.sample_freq
                     except:
-                        sampleRate = "sample rate unsupported "
+                        sampleRate = "samplerate unsupported "
                     try:
                         channels = mp3File.info.mode
                     except:
-                        channels = " channels not found "
+                        channels = ""
 
                     bits = "  "
                     vbrTrueFalse = ''
@@ -124,23 +125,55 @@ def detect():
                 currentFile = os.path.join(directory, file)
                 try:
                     sampleRate = (audiotools.open(currentFile).sample_rate())
+                    ch = "ch"
+                    gap = "       "
                 except:
-                    sampleRate = "sample rate unsupported "
+                    sampleRate = "samplerate unsupported"
+                    gap = ""
+                    ch = ""
                 try:
                     bits = (audiotools.open(currentFile).bits_per_sample())
                 except:
-                    bits = " bits not found "
+                    bits = ""
                 try:
                     channels = int(audiotools.open(currentFile).channels())
                 except:
-                    channels = " no channels found "
+                    channels = ""
 
                 if sampleRate == 44100 and bits == 16 and channels == 2:
                     errorWav = " [ok]  "
+
+
                 else:
                     errorWav = "[ERROR]"
 
-                print(errorWav, sampleRate, bits, channels, "ch", "       ", file)
+
+                print(errorWav, sampleRate, bits, channels, ch, gap, file)
+
+            if file.endswith((".aac", ".aiff", "aif", "flac", "m4a", "m4p")):
+
+                currentFile = os.path.join(directory, file)
+                try:
+                    sampleRate = (audiotools.open(currentFile).sample_rate())
+                except:
+                    sampleRate = "samplerate unsupported "
+                try:
+                    bits = (audiotools.open(currentFile).bits_per_sample())
+                except:
+                    bits = " "
+                try:
+                    channels = int(audiotools.open(currentFile).channels())
+                except:
+                    channels = " "
+
+                # if sampleRate == 44100 and bits == 16 and channels == 2:
+                #     errorWav = " [ok]  "
+                #     ch = "ch"
+                # else:
+                errorWav = "[ERROR]"
+                ch = ""
+
+                print(errorWav, sampleRate, bits, channels, ch, "         ", file)
     # return
 
 #detect()
@@ -150,6 +183,7 @@ class Event(LoggingEventHandler):
     def on_moved(self, event):
         print('\n' * 50)
         detect()
+
 
 
 if __name__ == "__main__":
