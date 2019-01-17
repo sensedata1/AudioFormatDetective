@@ -79,7 +79,7 @@ def detect():
 # Look for mp3 files and evaluate
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
-            if file.endswith((".mp3", ".MP3", ".Mp3")):
+            if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith("."):
                 currentFile = os.path.join(directory, file)
 
                 try:
@@ -111,22 +111,30 @@ def detect():
 
                     bits = "  "
 
-                if bitRate[0] is True:
-                    vbrTrueFalse = "vbr"
-                else:
-                    vbrTrueFalse = "cbr"
+                try:
+                    if bitRate[0] is True:
+                        vbrTrueFalse = "vbr"
+                    else:
+                        vbrTrueFalse = "cbr"
+                except:
+                    vbrTrueFalse = "***"
+
                 if channels == "Joint stereo" or "Stereo" or "stereo" or "Joint Stereo":
                     channels = 2
+                try:
+                    rate = int(bitRate[1])
+                except:
+                    rate = "err"
 
-                if sampleRate == 44100 and channels == 2 and bitRate[1] < 325 and bitRate[1] > 315:
+                if sampleRate == 44100 and channels == 2 and rate < 325 and rate > 315:
                     errorMp3 = green(" [ok]")
                 else:
                     errorMp3 = red("[ERR]")
 
-                print(errorMp3, sampleRate, bits, channels, "ch", vbrTrueFalse, bitRate[1], duration[3:], file)
+                print(errorMp3, sampleRate, bits, channels, "ch", vbrTrueFalse, rate, duration[3:], file)
 
 # Look for wav files and evaluate
-            if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")):
+            if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith("."):
 
                 currentFile = os.path.join(directory, file)
                 try:
