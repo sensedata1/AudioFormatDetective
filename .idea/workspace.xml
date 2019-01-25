@@ -6,6 +6,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AudioFormatDetective6L.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetective6L.py" afterDir="false" />
     </list>
@@ -17,14 +18,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetective6L.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="154" column="26" lean-forward="true" selection-start-line="154" selection-start-column="26" selection-end-line="154" selection-end-column="26" />
+            <state relative-caret-position="1965">
+              <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="308">
+              <caret line="313" lean-forward="true" selection-start-line="313" selection-end-line="313" />
             </state>
           </provider>
         </entry>
@@ -46,12 +56,14 @@
         <option value="$PROJECT_DIR$/Test/AudioFormatDetective6LLZ.py" />
         <option value="$PROJECT_DIR$/testfft.py" />
         <option value="$PROJECT_DIR$/AudioFormatDetective6L.py" />
+        <option value="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="22" />
     <option name="y" value="23" />
-    <option name="width" value="1213" />
+    <option name="width" value="1280" />
     <option name="height" value="777" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -87,6 +99,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Test" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -243,11 +256,25 @@
       <option name="project" value="LOCAL" />
       <updated>1548434001237</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added watermark detection using voice recognition">
+      <created>1548434982222</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1548434982222</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Watermark detection using voice recognition + tempWav now created in ~home">
+      <created>1548439265754</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1548439265754</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="777" extended-state="6" />
+    <frame x="1" y="23" width="1280" height="777" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21445592" />
@@ -298,7 +325,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Renamed to match --onefile dist" />
-    <option name="LAST_COMMIT_MESSAGE" value="Renamed to match --onefile dist" />
+    <MESSAGE value="Added watermark detection using voice recognition" />
+    <MESSAGE value="Watermark detection using voice recognition + tempWav now created in ~home" />
+    <option name="LAST_COMMIT_MESSAGE" value="Watermark detection using voice recognition + tempWav now created in ~home" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -351,11 +380,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective6L.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="154" column="26" lean-forward="true" selection-start-line="154" selection-start-column="26" selection-end-line="154" selection-end-column="26" />
+        <state relative-caret-position="1965">
+          <caret line="131" lean-forward="true" selection-start-line="131" selection-end-line="131" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="313" lean-forward="true" selection-start-line="313" selection-end-line="313" />
         </state>
       </provider>
     </entry>
