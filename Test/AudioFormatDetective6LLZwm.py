@@ -91,7 +91,12 @@ def detect():
     # Look for mp3 files and evaluate
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
-            if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith("."):
+
+            # if file.startswith(">>" or ">>>>") and os.path.isfile(os.path.join(directory, file)):
+            #     os.remove(os.path.join(directory, file))
+
+            if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith(".") \
+                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith(">>"):
                 currentFile = os.path.join(directory, file)
 
                 try:
@@ -190,14 +195,20 @@ def detect():
 
                 print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
 
+                # if os.path.isfile(currentFile):
+                #     # cPath, cFile = os.path.split(currentFile)
+                #
+                #     os.renames(currentFile, ">>" + currentFile)
+
             # Look for wav files and evaluate
-            if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith("."):
+            if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith(".") \
+                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith(">>"):
 
                 currentFile = os.path.join(directory, file)
                 try:
                     sampleRate = (audiotools.open(currentFile).sample_rate())
                     ch = "ch"
-                    gap = "       "
+                    gap = "      "
                 except:
                     sampleRate = "BitDepth Unsupported"
                     gap = ""
@@ -282,8 +293,15 @@ def detect():
                 # gap = LACout
 
                 print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
+
+                # if os.path.isfile(currentFile):
+                #     # cPath, cFile = os.path.split(currentFile)
+                #
+                #     os.renames(currentFile, ">>" + currentFile)
+
             # If any other audio file types are present mark as [ERR]
-            if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")):
+            if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
+                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith(">>"):
 
                 currentFile = os.path.join(directory, file)
                 try:
@@ -304,6 +322,11 @@ def detect():
 
                 print(errorWav, sampleRate, bits, channels, ch, "         ", file)
 
+                # addToFileName()
+                # if os.path.isfile(currentFile):
+                #     # cPath, cFile = os.path.split(currentFile)
+                #
+                #     os.renames(currentFile, ">>" + currentFile)
 
 # Watch folder and run main function when a file is downloaded into folder
 class Event(LoggingEventHandler):
