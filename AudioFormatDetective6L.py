@@ -1,24 +1,21 @@
 #!/usr/local/opt/python/libexec/bin/python
+import datetime
+import logging
+import os
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+from zipfile import ZipFile
+
 import audiotools
 import eyed3
-from zipfile import ZipFile
-import shutil
-import os
-import time
-import logging
-from watchdog.observers import Observer
-from watchdog.events import LoggingEventHandler
-import datetime
-from colors import *
-import sys
-import subprocess
-from pathlib import Path
 import speech_recognition as sr
-from os import path
+from colors import *
 from pydub import AudioSegment
-import ffmpeg
-
-
+from watchdog.events import LoggingEventHandler
+from watchdog.observers import Observer
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -60,7 +57,7 @@ def detect():
     os.chdir(AJDownloadsFolder)
     cwd = os.getcwd()
 
-# Look for zip files and unzip then remove
+    # Look for zip files and unzip then remove
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
             # print(file) Debugging output
@@ -91,7 +88,7 @@ def detect():
                         except:
                             print("unable to remove __MACOSX hidden folder...")
 
-# Look for mp3 files and evaluate
+    # Look for mp3 files and evaluate
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
             if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith("."):
@@ -141,7 +138,7 @@ def detect():
                 dst = os.path.join(directory, "tempWav.wav")
 
                 # convert wav to mp3
-                sound = AudioSegment.from_mp3(src)# [10000:]
+                sound = AudioSegment.from_mp3(src)  # [10000:]
                 sound.export(dst, format="wav")
 
                 # Do watermark detection with voice recognition only on testWav.wav
@@ -176,7 +173,6 @@ def detect():
                     # clean up temp file
                     os.remove(dst)
 
-
                 if channels == "Joint stereo" or "Stereo" or "stereo" or "Joint Stereo":
                     channels = 2
                 try:
@@ -186,18 +182,14 @@ def detect():
 
                 vbrTrueFalse = "  "
 
-
-
-                if sampleRate == 44100 and channels == 2 and rate < 325 and rate > 315: #  and wm != "wmd":
+                if sampleRate == 44100 and channels == 2 and rate < 325 and rate > 315:  # and wm != "wmd":
                     errorMp3 = green(" [ok]")
                 else:
                     errorMp3 = red("[ERR]")
 
-
-
                 print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
 
-# Look for wav files and evaluate
+            # Look for wav files and evaluate
             if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith("."):
 
                 currentFile = os.path.join(directory, file)
@@ -271,8 +263,7 @@ def detect():
                     ch = "  "
                     wm = "nowm"
 
-
-                if sampleRate == 44100 and bits == 16 and channels == 2: # and wm !="wmd":
+                if sampleRate == 44100 and bits == 16 and channels == 2:  # and wm !="wmd":
                     errorWav = green(" [ok]")
 
                 else:
@@ -288,10 +279,8 @@ def detect():
                     gap = blue(" Clean")
                 # gap = LACout
 
-
-
                 print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
-# If any other audio file types are present mark as [ERR]
+            # If any other audio file types are present mark as [ERR]
             if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")):
 
                 currentFile = os.path.join(directory, file)
@@ -312,6 +301,7 @@ def detect():
                 ch = ""
 
                 print(errorWav, sampleRate, bits, channels, ch, "         ", file)
+
 
 # Watch folder and run main function when a file is downloaded into folder
 class Event(LoggingEventHandler):
@@ -335,4 +325,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
-
