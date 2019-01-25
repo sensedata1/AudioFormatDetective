@@ -96,7 +96,7 @@ def detect():
             #     os.remove(os.path.join(directory, file))
 
             if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith(".") \
-                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith(">>"):
+                    and os.path.isfile(os.path.join(directory, file)):
                 currentFile = os.path.join(directory, file)
 
                 try:
@@ -202,7 +202,7 @@ def detect():
 
             # Look for wav files and evaluate
             if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith(".") \
-                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith(">>"):
+                    and os.path.isfile(os.path.join(directory, file)):
 
                 currentFile = os.path.join(directory, file)
                 try:
@@ -301,7 +301,7 @@ def detect():
 
             # If any other audio file types are present mark as [ERR]
             if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
-                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith(">>"):
+                    and os.path.isfile(os.path.join(directory, file)):
 
                 currentFile = os.path.join(directory, file)
                 try:
