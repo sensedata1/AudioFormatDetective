@@ -122,24 +122,27 @@ def detect():
                 except:
 
                     bits = "  "
-                try:
-                    if bitRate[0] is True:
-                        vbrTrueFalse = "vbr"
-                    else:
-                        vbrTrueFalse = "cbr"
-                except:
-                    vbrTrueFalse = "***"
+                # try:
+                #     if bitRate[0] is True:
+                #         vbrTrueFalse = "vbr"
+                #     else:
+                #         vbrTrueFalse = "cbr"
+                # except:
+                #     vbrTrueFalse = "***"
 
-                ch = "   "
+
 
                 # convert mp3 to wav for voice recognition
                 # files
+                ch = "   "
+                home = str(Path.home())
+
                 src = currentFile
-                dst = os.path.join(directory, "tempWav.wav")
+                dst = os.path.join(home, "tempWav.wav")
 
                 # convert wav to mp3
                 sound = AudioSegment.from_mp3(src)  # [10000:]
-                sound.export(dst, format="wav")
+                sound.export(os.path.join(home, "tempWav.wav"), format="wav")
 
                 # Do watermark detection with voice recognition only on testWav.wav
                 srVoiceTestWav = sr.AudioFile(dst)
@@ -148,7 +151,7 @@ def detect():
                     with srVoiceTestWav as source:
                         audio = r.record(source, duration=12)
                         # print("Found the following speech in audio file...")
-                        # print(r.recognize_google(audio))
+                        print(r.recognize_google(audio))
                         recognisedSpeech = str((r.recognize_google(audio)))
                         if "audio" in recognisedSpeech:
                             ch = red("WM")
@@ -239,7 +242,8 @@ def detect():
                 try:
                     with srVoiceTestWav as source:
                         audio = r.record(source, duration=12)
-                        # print(r.recognize_google(audio))
+                        # print("Found the following speech in audio file...")
+                        print(r.recognize_google(audio))
                         recognisedSpeech = str((r.recognize_google(audio)))
 
                         # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
