@@ -61,7 +61,7 @@ def detect():
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
             # print(file) Debugging output
-            if file.endswith((".zip", ".ZIP")):
+            if file.endswith((".zip", ".ZIP")) and os.path.isfile(os.path.join(directory, file)):
 
                 currentZipFile = os.path.join(directory, file)
                 zipFolderName = os.path.splitext(currentZipFile)[0]
@@ -91,7 +91,9 @@ def detect():
     # Look for mp3 files and evaluate
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
-            if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith("."):
+            if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith(".") \
+                    and os.path.isfile(os.path.join(directory, file)):
+
                 currentFile = os.path.join(directory, file)
 
                 try:
@@ -191,13 +193,14 @@ def detect():
                 print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
 
             # Look for wav files and evaluate
-            if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith("."):
+            if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith(".") \
+                    and os.path.isfile(os.path.join(directory, file)):
 
                 currentFile = os.path.join(directory, file)
                 try:
                     sampleRate = (audiotools.open(currentFile).sample_rate())
                     ch = "ch"
-                    gap = "       "
+                    gap = "      "
                 except:
                     sampleRate = "BitDepth Unsupported"
                     gap = ""
@@ -283,8 +286,8 @@ def detect():
 
                 print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
             # If any other audio file types are present mark as [ERR]
-            if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")):
-
+            if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
+                    and os.path.isfile(os.path.join(directory, file)):
                 currentFile = os.path.join(directory, file)
                 try:
                     sampleRate = (audiotools.open(currentFile).sample_rate())
