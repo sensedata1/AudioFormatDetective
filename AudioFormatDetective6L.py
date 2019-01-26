@@ -317,6 +317,7 @@ class Event(LoggingEventHandler):
     def on_moved(self, event):
         print('\n' * 50)
         detect()
+        print("Finished!")
 
 
 if __name__ == "__main__":

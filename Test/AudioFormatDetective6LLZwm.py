@@ -16,6 +16,7 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
+from progress.spinner import Spinner
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -90,11 +91,9 @@ def detect():
     #                         print("unable to remove __MACOSX hidden folder...")
 
     # Look for mp3 files and evaluate
+
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
-
-            # if file.startswith(">>" or ">>>>") and os.path.isfile(os.path.join(directory, file)):
-            #     os.remove(os.path.join(directory, file))
 
             if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith(".") \
                     and os.path.isfile(os.path.join(directory, file)) and not file.startswith("_I_"):
@@ -355,6 +354,7 @@ class Event(LoggingEventHandler):
     def on_created(self, event):
         print('\n' * 50)
         detect()
+        print("Finished!")
 
 
 if __name__ == "__main__":

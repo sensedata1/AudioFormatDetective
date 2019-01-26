@@ -8,6 +8,7 @@
     <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AudioFormatDetective6L.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetective6L.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,20 +18,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="409">
-              <caret line="97" selection-start-line="97" selection-end-line="98" selection-end-column="100" />
+            <state relative-caret-position="308">
+              <caret line="358" lean-forward="true" selection-start-line="358" selection-end-line="358" />
+              <folding>
+                <element signature="e#43#58#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetective6L.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="386">
-              <caret line="207" column="20" lean-forward="true" selection-start-line="207" selection-start-column="20" selection-end-line="207" selection-end-column="20" />
+            <state relative-caret-position="374">
+              <caret line="321" lean-forward="true" selection-start-line="321" selection-end-line="321" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -54,8 +58,8 @@
         <option value="$PROJECT_DIR$/FileFormatDetectUser4LeaveZip.py" />
         <option value="$PROJECT_DIR$/Test/AudioFormatDetective6LLZ.py" />
         <option value="$PROJECT_DIR$/testfft.py" />
-        <option value="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" />
         <option value="$PROJECT_DIR$/AudioFormatDetective6L.py" />
+        <option value="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" />
       </list>
     </option>
   </component>
@@ -283,15 +287,36 @@
       <option name="project" value="LOCAL" />
       <updated>1548451478195</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Watermark detection using voice recognition + tempWav now created in ~home">
+      <created>1548453639333</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1548453639333</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Watermark detection using voice recognition + tempWav now created in ~home">
+      <created>1548453716687</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1548453716687</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Watermark detection using voice recognition + ignore files already processed">
+      <created>1548503866304</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1548503866304</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="23" width="1280" height="777" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21445592" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7839416" visible="true" weight="0.21445592" />
+      <window_info id="Structure" order="1" sideWeight="0.21605839" side_tool="true" weight="0.21445592" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329927" />
@@ -340,7 +365,8 @@
     <MESSAGE value="Renamed to match --onefile dist" />
     <MESSAGE value="Added watermark detection using voice recognition" />
     <MESSAGE value="Watermark detection using voice recognition + tempWav now created in ~home" />
-    <option name="LAST_COMMIT_MESSAGE" value="Watermark detection using voice recognition + tempWav now created in ~home" />
+    <MESSAGE value="Watermark detection using voice recognition + ignore files already processed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Watermark detection using voice recognition + ignore files already processed" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -391,17 +417,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py">
+    <entry file="file://$PROJECT_DIR$/AudioFormatDetective6L.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="409">
-          <caret line="97" selection-start-line="97" selection-end-line="98" selection-end-column="100" />
+        <state relative-caret-position="374">
+          <caret line="321" lean-forward="true" selection-start-line="321" selection-end-line="321" />
+          <folding>
+            <element signature="e#43#58#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AudioFormatDetective6L.py">
+    <entry file="file://$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="386">
-          <caret line="207" column="20" lean-forward="true" selection-start-line="207" selection-start-column="20" selection-end-line="207" selection-end-column="20" />
+        <state relative-caret-position="308">
+          <caret line="358" lean-forward="true" selection-start-line="358" selection-end-line="358" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
