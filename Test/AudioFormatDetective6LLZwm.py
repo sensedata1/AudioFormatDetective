@@ -48,6 +48,7 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
+
 # This is the function which does the evaluation
 def detect():
     clear()
@@ -96,7 +97,7 @@ def detect():
             #     os.remove(os.path.join(directory, file))
 
             if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith(".") \
-                    and os.path.isfile(os.path.join(directory, file)):
+                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith("_I_"):
                 currentFile = os.path.join(directory, file)
 
                 try:
@@ -192,17 +193,24 @@ def detect():
                     errorMp3 = green(" [ok]")
                 else:
                     errorMp3 = red("[ERR]")
-
+                ######################################################################################
+                #           PRINT MP3 DATA                                                           #
+                ######################################################################################
                 print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
 
-                # if os.path.isfile(currentFile):
-                #     # cPath, cFile = os.path.split(currentFile)
-                #
-                #     os.renames(currentFile, ">>" + currentFile)
+                # rename files so they're ignored on next pass
+                if os.path.isfile(currentFile):
+                    cPath, cFile = os.path.split(currentFile)
+                    # print(cPath)
+                    # print(cFile)
+                    cFile = "_I_" + cFile
+                    # print(os.path.join(cPath, cFile))
+                    newFileName = (os.path.join(cPath, cFile))
+                    os.renames(currentFile, newFileName)
 
             # Look for wav files and evaluate
             if file.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not file.startswith(".") \
-                    and os.path.isfile(os.path.join(directory, file)):
+                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith("_I_"):
 
                 currentFile = os.path.join(directory, file)
                 try:
@@ -292,16 +300,25 @@ def detect():
                     gap = blue(" Clean")
                 # gap = LACout
 
+                ######################################################################################
+                #           PRINT WAV DATA                                                           #
+                ######################################################################################
                 print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
 
-                # if os.path.isfile(currentFile):
-                #     # cPath, cFile = os.path.split(currentFile)
-                #
-                #     os.renames(currentFile, ">>" + currentFile)
+                # rename files so they're ignored on next pass
+
+                if os.path.isfile(currentFile):
+                    cPath, cFile = os.path.split(currentFile)
+                    # print(cPath)
+                    # print(cFile)
+                    cFile = "_I_" + cFile
+                    # print(os.path.join(cPath, cFile))
+                    newFileName = (os.path.join(cPath, cFile))
+                    os.renames(currentFile, newFileName)
 
             # If any other audio file types are present mark as [ERR]
             if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
-                    and os.path.isfile(os.path.join(directory, file)):
+                    and os.path.isfile(os.path.join(directory, file)) and not file.startswith("_I_"):
 
                 currentFile = os.path.join(directory, file)
                 try:
@@ -322,11 +339,16 @@ def detect():
 
                 print(errorWav, sampleRate, bits, channels, ch, "         ", file)
 
-                # addToFileName()
-                # if os.path.isfile(currentFile):
-                #     # cPath, cFile = os.path.split(currentFile)
-                #
-                #     os.renames(currentFile, ">>" + currentFile)
+                # rename files so they're ignored on next pass
+                if os.path.isfile(currentFile):
+                    cPath, cFile = os.path.split(currentFile)
+                    # print(cPath)
+                    # print(cFile)
+                    cFile = "_I_" + cFile
+                    # print(os.path.join(cPath, cFile))
+                    newFileName = (os.path.join(cPath, cFile))
+                    os.renames(currentFile, newFileName)
+
 
 # Watch folder and run main function when a file is downloaded into folder
 class Event(LoggingEventHandler):

@@ -189,7 +189,9 @@ def detect():
                     errorMp3 = green(" [ok]")
                 else:
                     errorMp3 = red("[ERR]")
-
+                ######################################################################################
+                #           PRINT MP3 DATA                                                           #
+                ######################################################################################
                 print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
 
             # Look for wav files and evaluate
@@ -283,7 +285,9 @@ def detect():
                 if "Result: Clean" in LACout:
                     gap = blue(" Clean")
                 # gap = LACout
-
+                ######################################################################################
+                #           PRINT WAV DATA                                                           #
+                ######################################################################################
                 print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
             # If any other audio file types are present mark as [ERR]
             if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
