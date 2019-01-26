@@ -2,13 +2,9 @@
 import datetime
 import logging
 import os
-import shutil
 import subprocess
-import sys
 import time
 from pathlib import Path
-from zipfile import ZipFile
-
 import audiotools
 import eyed3
 import speech_recognition as sr
@@ -16,7 +12,6 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
-from progress.spinner import Spinner
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -288,7 +283,7 @@ def detect():
 
                 else:
                     errorWav = red("[ERR]")
-
+                LACout = ""
                 if "Result: Upsampled" in LACout:
                     gap = yellow("Upsamp")
                 if "Result: Upscaled" in LACout:

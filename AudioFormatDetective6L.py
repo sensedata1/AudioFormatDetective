@@ -4,11 +4,9 @@ import logging
 import os
 import shutil
 import subprocess
-import sys
 import time
 from pathlib import Path
 from zipfile import ZipFile
-
 import audiotools
 import eyed3
 import speech_recognition as sr
@@ -275,7 +273,7 @@ def detect():
 
                 else:
                     errorWav = red("[ERR]")
-
+                LACout = ""
                 if "Result: Upsampled" in LACout:
                     gap = yellow("Upsamp")
                 if "Result: Upscaled" in LACout:
