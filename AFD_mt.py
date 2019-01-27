@@ -192,6 +192,7 @@ def process_audio_files(currentFile):
         except:
             rate = "err"
 
+
         vbrTrueFalse = "  "
 
         if sampleRate == 44100 and channels == 2 and rate < 325 and rate > 315:  # and wm != "wmd":
