@@ -14,6 +14,7 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
+import multiprocessing
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -30,7 +31,6 @@ eyed3.log.setLevel("ERROR")
 userFolder = input("Drag your AJ downloads folder here and press enter...")
 # create instance of speech_recognition
 r = sr.Recognizer()
-
 
 # Format the user input
 tempVar = userFolder.replace("\\", "")
@@ -88,6 +88,7 @@ def detect():
                             print("unable to remove __MACOSX hidden folder...")
 
     # Look for mp3 files and evaluate
+
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
             if file.endswith((".mp3", ".MP3", ".Mp3")) and not file.startswith(".") \
@@ -274,7 +275,7 @@ def detect():
 
                 else:
                     errorWav = red("[ERR]")
-                LACout = ""
+                    LACout = ""
                 if "Result: Upsampled" in LACout:
                     gap = yellow("Upsamp")
                 if "Result: Upscaled" in LACout:
@@ -315,7 +316,6 @@ def detect():
 class Event(LoggingEventHandler):
     def on_moved(self, event):
         print('\n' * 50)
-        print("Analysing...")
         detect()
         print("Finished!")
 

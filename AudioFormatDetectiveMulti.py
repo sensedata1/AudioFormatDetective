@@ -88,14 +88,7 @@ def detect():
     clear()
     print("")
     print("")
-
     os.chdir(AJDownloadsFolder)
-    cwd = os.getcwd()
-
-    # Look for mp3 files and evaluate
-    # for directory, subdirectories, files in os.walk(cwd):
-    #     for file in files:
-    #         processAudioFiles()
 
 
 def process_audio_files(currentFile):
@@ -143,7 +136,7 @@ def process_audio_files(currentFile):
 
         # convert mp3 to wav for voice recognition
         # files
-        ch = "   "
+
         home = str(Path.home())
 
         src = currentFile
@@ -167,34 +160,24 @@ def process_audio_files(currentFile):
                     wm = "wmd"
                 else:
                     ch = "  "
-
                 if "jungle" in recognisedSpeech:
                     ch = red("WM")
                     wm = "wmd"
                 else:
                     ch = "  "
-
-
         except Exception as e:
-            # print(e)
-            # print("No watermark detected in " + file)
             ch = "  "
             wm = "nowm"
-
         if os.path.exists(dst):
             # clean up temp file
             os.remove(dst)
-
         if channels == "Joint stereo" or "Stereo" or "stereo" or "Joint Stereo":
             channels = 2
         try:
             rate = int(bitRate[1])
         except:
             rate = "err"
-
-
         vbrTrueFalse = "  "
-
         if sampleRate == 44100 and channels == 2 and rate < 325 and rate > 315:  # and wm != "wmd":
             errorMp3 = green(" [ok]")
         else:
@@ -202,15 +185,10 @@ def process_audio_files(currentFile):
         ######################################################################################
         #           PRINT MP3 DATA                                                           #
         ######################################################################################
-
-        # results = (errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
-
         print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
-
     # Look for wav files and evaluate
     if currentFile.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not currentFile.startswith(".") \
             and os.path.isfile(currentFile):
-
         # currentFile = os.path.join(directory, file)
         try:
             sampleRate = (audiotools.open(currentFile).sample_rate())
@@ -228,7 +206,6 @@ def process_audio_files(currentFile):
             channels = int(audiotools.open(currentFile).channels())
         except:
             channels = ""
-
         try:
             home = str(Path.home())
             LACpath = os.path.join(home, "LAC")
@@ -237,11 +214,9 @@ def process_audio_files(currentFile):
             p = subprocess.Popen(a, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
             p2 = subprocess.Popen(['grep', 'Result'], stdin=p.stdout,
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
             sys.stdout.flush()
             for line in iter(p2.stdout.readline, b''):
                 LACout = str(line)
-
         except Exception as ex:
             print("crap!")
             print(ex)
@@ -251,9 +226,6 @@ def process_audio_files(currentFile):
             duration = str(datetime.timedelta(seconds=durationSecsWav))
         except:
             duration = "****"
-
-        ch = "   "
-
         srVoiceTestWav = sr.AudioFile(currentFile)
         try:
             with srVoiceTestWav as source:
@@ -261,18 +233,13 @@ def process_audio_files(currentFile):
                 # print("Found the following speech in audio file...")
                 print(r.recognize_google(audio))
                 recognisedSpeech = str((r.recognize_google(audio)))
-
                 # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
-
                 if "audio" in recognisedSpeech:
-
                     ch = red("WM")
                     wm = "wmd"
                 else:
                     ch = "  "
-
                 if "jungle" in recognisedSpeech:
-
                     ch = red("WM")
                     wm = "wmd"
                 else:
@@ -282,13 +249,11 @@ def process_audio_files(currentFile):
             # print("No watermark detected in " + file)
             ch = "  "
             wm = "nowm"
-
         if sampleRate == 44100 and bits == 16 and channels == 2:  # and wm !="wmd":
             errorWav = green(" [ok]")
-
         else:
             errorWav = red("[ERR]")
-        LACout = ""
+            LACout = ""
         if "Result: Upsampled" in LACout:
             gap = yellow("Upsamp")
         if "Result: Upscaled" in LACout:
@@ -301,9 +266,6 @@ def process_audio_files(currentFile):
         ######################################################################################
         #           PRINT WAV DATA                                                           #
         ######################################################################################
-
-        # results = (errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
-
         print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
     # If any other audio file types are present mark as [ERR]
     if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
@@ -321,17 +283,9 @@ def process_audio_files(currentFile):
             channels = int(audiotools.open(currentFile).channels())
         except:
             channels = " "
-
         errorWav = red("[ERR]")
         ch = ""
-
-        # results = (errorWav, sampleRate, bits, channels, ch, "         ", file)
-
         print(errorWav, sampleRate, bits, channels, ch, "         ", file)
-
-        # return results
-
-
 # Watch folder and run main function when a file is downloaded into folder
 
 
@@ -342,6 +296,7 @@ class Event(LoggingEventHandler):
         cwd = os.getcwd()
         unzip()
         print("analysing...")
+
         p = multiprocessing.Pool()
         for directory, subdirectories, files in os.walk(cwd):
             for file in files:
@@ -350,12 +305,10 @@ class Event(LoggingEventHandler):
                 p.start()
         p.join()
         p.close()
-
         print("Finished!")
 
 
 if __name__ == "__main__":
-
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')

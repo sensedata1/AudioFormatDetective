@@ -283,7 +283,7 @@ def detect():
 
                 else:
                     errorWav = red("[ERR]")
-                LACout = ""
+                    LACout = ""
                 if "Result: Upsampled" in LACout:
                     gap = yellow("Upsamp")
                 if "Result: Upscaled" in LACout:
