@@ -32,6 +32,7 @@ userFolder = input("Drag your AJ downloads folder here and press enter...")
 # create instance of speech_recognition
 r = sr.Recognizer()
 
+
 # Format the user input
 tempVar = userFolder.replace("\\", "")
 tempVar2 = tempVar.rstrip()
