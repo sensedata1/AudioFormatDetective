@@ -14,8 +14,8 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
+# from multiprocessing import Pool
 import multiprocessing
-
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
 red = lambda text: '\033[0;31m' + text + '\033[0m'
@@ -99,7 +99,7 @@ def detect():
 
 
 def process_audio_files(currentFile):
-    # currentFile = os.path.join(directory, file)
+    # currentFile = fileList
     curPath, file = os.path.split(currentFile)
 
     if currentFile.endswith((".mp3", ".MP3", ".Mp3")) and not currentFile.startswith(".") \
@@ -342,25 +342,14 @@ class Event(LoggingEventHandler):
         cwd = os.getcwd()
         unzip()
         print("analysing...")
-        # p = multiprocessing.Pool()
-
+        p = multiprocessing.Pool()
         for directory, subdirectories, files in os.walk(cwd):
             for file in files:
-
                 currentFile = os.path.join(directory, file)
-                process_audio_files(currentFile)
-
-                # print("currentFile = " + currentFile)
-                # print(file)
-                # print(directory)
-                # print(currentFile)
-                # p.imap(process_audio_files, currentFile)
-
-            # p.close()
-            # p.join()
-        # print("Complete")
-        # end = time.time()
-        # print('total time (s)= ' + str(end - start))
+                p = multiprocessing.Process(process_audio_files(currentFile))
+                p.start()
+        p.join()
+        p.close()
 
         print("Finished!")
 
