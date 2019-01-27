@@ -100,7 +100,7 @@ def detect():
 
 def process_audio_files(currentFile):
     # currentFile = os.path.join(directory, file)
-    path, file = os.path.split(currentFile)
+    curPath, file = os.path.split(currentFile)
 
     if currentFile.endswith((".mp3", ".MP3", ".Mp3")) and not currentFile.startswith(".") \
             and os.path.isfile(currentFile):
@@ -203,6 +203,8 @@ def process_audio_files(currentFile):
         #           PRINT MP3 DATA                                                           #
         ######################################################################################
 
+        # results = (errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
+
         print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
 
     # Look for wav files and evaluate
@@ -299,6 +301,9 @@ def process_audio_files(currentFile):
         ######################################################################################
         #           PRINT WAV DATA                                                           #
         ######################################################################################
+
+        # results = (errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
+
         print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
     # If any other audio file types are present mark as [ERR]
     if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
@@ -320,10 +325,16 @@ def process_audio_files(currentFile):
         errorWav = red("[ERR]")
         ch = ""
 
+        # results = (errorWav, sampleRate, bits, channels, ch, "         ", file)
+
         print(errorWav, sampleRate, bits, channels, ch, "         ", file)
+
+        # return results
 
 
 # Watch folder and run main function when a file is downloaded into folder
+
+
 class Event(LoggingEventHandler):
     def on_moved(self, event):
         print('\n' * 50)
@@ -331,22 +342,25 @@ class Event(LoggingEventHandler):
         cwd = os.getcwd()
         unzip()
         print("analysing...")
-
         # p = multiprocessing.Pool()
-        # timing it...
 
         for directory, subdirectories, files in os.walk(cwd):
             for file in files:
+
                 currentFile = os.path.join(directory, file)
                 process_audio_files(currentFile)
-                # p.map(process_audio_files, currentFile)
 
-        # p.close()
-        # p.join()
+                # print("currentFile = " + currentFile)
+                # print(file)
+                # print(directory)
+                # print(currentFile)
+                # p.imap(process_audio_files, currentFile)
+
+            # p.close()
+            # p.join()
         # print("Complete")
         # end = time.time()
         # print('total time (s)= ' + str(end - start))
-
 
         print("Finished!")
 
