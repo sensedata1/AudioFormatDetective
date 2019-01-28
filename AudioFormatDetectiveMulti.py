@@ -267,8 +267,7 @@ class Event(LoggingEventHandler):
         clear()
         print('\n' * 50)
         print("analysing...")
-        time.sleep(0)
-
+        time.sleep(1)
         currentFileList = []
         # processes = []
 

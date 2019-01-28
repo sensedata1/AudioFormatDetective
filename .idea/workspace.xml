@@ -20,8 +20,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="846">
-              <caret line="290" lean-forward="true" selection-start-line="290" selection-end-line="290" />
+            <state relative-caret-position="699">
+              <caret line="305" lean-forward="true" selection-start-line="305" selection-end-line="305" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -449,7 +449,14 @@
       <option name="project" value="LOCAL" />
       <updated>1548697892552</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Multiprocessing working now">
+      <created>1548706796237</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1548706796238</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -562,7 +569,8 @@
     <MESSAGE value="Tidy up global vars declaration" />
     <MESSAGE value="Multiprocessing working" />
     <MESSAGE value="Non mp version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Non mp version" />
+    <MESSAGE value="Multiprocessing working now" />
+    <option name="LAST_COMMIT_MESSAGE" value="Multiprocessing working now" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -630,8 +638,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="846">
-          <caret line="290" lean-forward="true" selection-start-line="290" selection-end-line="290" />
+        <state relative-caret-position="699">
+          <caret line="305" lean-forward="true" selection-start-line="305" selection-end-line="305" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
