@@ -14,7 +14,7 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
-from multiprocessing import Process, current_process
+from multiprocessing import Process
 import multiprocessing as mp
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -26,6 +26,8 @@ magenta = lambda text: '\033[0;35m' + text + '\033[0m'
 cyan = lambda text: '\033[0;36m' + text + '\033[0m'
 white = lambda text: '\033[0;37m' + text + '\033[0m'
 
+# create global instance of speech_recognition
+r = sr.Recognizer()
 # Set up a "clear" with cross platform compatibility with Windows
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -36,14 +38,11 @@ def unzip():
     # Look for zip files and unzip then remove
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
-
             # print(file) Debugging output
             if file.endswith((".zip", ".ZIP")) and os.path.isfile(os.path.join(directory, file)):
-
                 currentZipFile = os.path.join(directory, file)
                 zipFolderName = os.path.splitext(currentZipFile)[0]
                 print(file)
-
                 with ZipFile(currentZipFile, 'r') as zipArchive:
                     try:
                         zipArchive.extractall(zipFolderName)
@@ -66,20 +65,13 @@ def unzip():
                             print("unable to remove __MACOSX hidden folder...")
 
 
-def detect():
-    clear()
-    print("")
-    print("")
-    os.chdir(AJDownloadsFolder)
-
-
 def process_audio_files(currentFile):
     # currentFile = fileList
+    eyed3.log.setLevel("ERROR")
     curPath, file = os.path.split(currentFile)
 
     if currentFile.endswith((".mp3", ".MP3", ".Mp3")) and not currentFile.startswith(".") \
             and os.path.isfile(currentFile):
-
         try:
             mp3File = eyed3.load(currentFile)
         except:
@@ -94,19 +86,16 @@ def process_audio_files(currentFile):
             sampleRate = "Samplerate Unsupported"
         try:
             channels = str(mp3File.info.mode)
-            # print(channels)
         except:
             channels = ""
         try:
             durationSecs = mp3File.info.time_secs
             duration = str(datetime.timedelta(seconds=durationSecs))
-
         except:
             duration = "***"
         try:
             bits = (audiotools.open(currentFile).bits_per_sample())
         except:
-
             bits = "  "
         # try:
         #     if bitRate[0] is True:
@@ -115,24 +104,18 @@ def process_audio_files(currentFile):
         #         vbrTrueFalse = "cbr"
         # except:
         #     vbrTrueFalse = "***"
-
         # convert mp3 to wav for voice recognition
-        # files
-
         home = str(Path.home())
-
         src = currentFile
         dst = os.path.join(home, "tempWav.wav")
-
         # convert wav to mp3
         sound = AudioSegment.from_mp3(src)  # [10000:]
         sound.export(os.path.join(home, "tempWav.wav"), format="wav")
-
         # Do watermark detection with voice recognition only on testWav.wav
         srVoiceTestWav = sr.AudioFile(dst)
-
         try:
             with srVoiceTestWav as source:
+                # print('Doing speech recognition')
                 audio = r.record(source, duration=12)
                 # print("Found the following speech in audio file...")
                 print(r.recognize_google(audio))
@@ -140,9 +123,10 @@ def process_audio_files(currentFile):
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
                     wm = "wmd"
-                else:
-                    ch = "  "
                 if "jungle" in recognisedSpeech:
+                    ch = red("WM")
+                    wm = "wmd"
+                if "audi" in recognisedSpeech:
                     ch = red("WM")
                     wm = "wmd"
                 else:
@@ -150,9 +134,10 @@ def process_audio_files(currentFile):
         except Exception as e:
             ch = "  "
             wm = "nowm"
-        if os.path.exists(dst):
-            # clean up temp file
-            os.remove(dst)
+            print(e)
+        # if os.path.exists(dst):
+        #     # clean up temp file    LEAVING TEMP FILE FOR NOW
+        #     os.remove(dst)
         if channels == "Joint stereo" or "Stereo" or "stereo" or "Joint Stereo":
             channels = 2
         try:
@@ -213,15 +198,16 @@ def process_audio_files(currentFile):
             with srVoiceTestWav as source:
                 audio = r.record(source, duration=12)
                 # print("Found the following speech in audio file...")
-                print(r.recognize_google(audio))
                 recognisedSpeech = str((r.recognize_google(audio)))
+                print(recognisedSpeech)
                 # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
                     wm = "wmd"
-                else:
-                    ch = "  "
                 if "jungle" in recognisedSpeech:
+                    ch = red("WM")
+                    wm = "wmd"
+                if "audi" in recognisedSpeech:
                     ch = red("WM")
                     wm = "wmd"
                 else:
@@ -268,29 +254,40 @@ def process_audio_files(currentFile):
         errorWav = red("[ERR]")
         ch = ""
         print(errorWav, sampleRate, bits, channels, ch, "         ", file)
+
 # Watch folder and run main function when a file is downloaded into folder
 
 
 class Event(LoggingEventHandler):
     def on_moved(self, event):
+        # print(event)
         os.chdir(AJDownloadsFolder)
         cwd = os.getcwd()
         unzip()
+        clear()
         print('\n' * 50)
         print("analysing...")
+        time.sleep(0)
 
         currentFileList = []
-        processes = []
+        # processes = []
 
         for directory, subdirectories, files in os.walk(cwd):
             for file in files:
                 tempCurrentFile = os.path.join(directory, file)
-                currentFileList.append(tempCurrentFile)
+                if tempCurrentFile.endswith\
+                            ((".mp3", ".MP3", ".Mp3", ".aac",
+                              ".aiff", ".aif", ".flac", ".m4a",
+                              ".m4p", ".wav", ".WAV", ".WaV",
+                              ".wAV", ".WAv", ".Wav")) and not tempCurrentFile.startswith(".") \
+                        and os.path.isfile(tempCurrentFile):
+                    currentFileList.append(tempCurrentFile)
+        # print(currentFileList)
         for currentFile in currentFileList:
             process = Process(target=process_audio_files, args=(currentFile,))
-            processes.append(process)
+            # processes.append(process)
             process.start()
-        print("Finished!")
+        # print("Finished!")
 
 
 if __name__ == "__main__":
@@ -299,9 +296,6 @@ if __name__ == "__main__":
     eyed3.log.setLevel("ERROR")
     # Get AJ Downloads folder from user input
     userFolder = input("Drag your AJ downloads folder here and press enter...")
-    # create instance of speech_recognition
-    r = sr.Recognizer()
-
     # Format the user input
     tempVar = userFolder.replace("\\", "")
     tempVar2 = tempVar.rstrip()

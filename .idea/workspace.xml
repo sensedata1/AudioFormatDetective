@@ -5,7 +5,10 @@
     <option name="SCOPE_TYPE" value="3" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="" />
+    <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,7 +16,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="846">
+              <caret line="290" lean-forward="true" selection-start-line="290" selection-end-line="290" />
+              <folding>
+                <element signature="e#43#58#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
@@ -56,7 +72,17 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="ProjectPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="AudioFormatDetective" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AudioFormatDetective" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -64,6 +90,11 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/venv" />
+      <recent name="$PROJECT_DIR$/Test" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/Test" />
@@ -397,11 +428,33 @@
       <option name="project" value="LOCAL" />
       <updated>1548696883623</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Multiprocessing working">
+      <created>1548697622960</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1548697622960</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Multiprocessing working">
+      <created>1548697694498</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1548697694498</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Non mp version">
+      <created>1548697892552</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1548697892552</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7839416" visible="true" weight="0.24146147" />
       <window_info id="Structure" order="1" sideWeight="0.21605839" side_tool="true" weight="0.21445592" />
@@ -508,7 +561,8 @@
     <MESSAGE value="Latest --onefile version" />
     <MESSAGE value="Tidy up global vars declaration" />
     <MESSAGE value="Multiprocessing working" />
-    <option name="LAST_COMMIT_MESSAGE" value="Multiprocessing working" />
+    <MESSAGE value="Non mp version" />
+    <option name="LAST_COMMIT_MESSAGE" value="Non mp version" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -576,8 +630,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        <state relative-caret-position="846">
+          <caret line="290" lean-forward="true" selection-start-line="290" selection-end-line="290" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
