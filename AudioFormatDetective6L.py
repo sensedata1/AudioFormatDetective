@@ -25,22 +25,6 @@ blue = lambda text: '\033[0;36m' + text + '\033[0m'
 magenta = lambda text: '\033[0;35m' + text + '\033[0m'
 cyan = lambda text: '\033[0;36m' + text + '\033[0m'
 white = lambda text: '\033[0;37m' + text + '\033[0m'
-# Suppress warnings from eyeD3
-eyed3.log.setLevel("ERROR")
-# Get AJ Downloads folder from user input
-userFolder = input("Drag your AJ downloads folder here and press enter...")
-# create instance of speech_recognition
-r = sr.Recognizer()
-
-# Format the user input
-tempVar = userFolder.replace("\\", "")
-tempVar2 = tempVar.rstrip()
-AJDownloadsFolder = os.path.abspath(tempVar2)
-os.chdir(AJDownloadsFolder)
-print("Downloads folder = " + AJDownloadsFolder)
-print("")
-print("Monitoring " + AJDownloadsFolder + "...")
-
 
 # Set up a "clear" with cross platform compatibility with Windoze
 def clear():
@@ -308,7 +292,6 @@ def detect():
 
                 errorWav = red("[ERR]")
                 ch = ""
-
                 print(errorWav, sampleRate, bits, channels, ch, "         ", file)
 
 
@@ -321,6 +304,22 @@ class Event(LoggingEventHandler):
 
 
 if __name__ == "__main__":
+    # Suppress warnings from eyeD3
+    eyed3.log.setLevel("ERROR")
+    # Get AJ Downloads folder from user input
+    userFolder = input("Drag your AJ downloads folder here and press enter...")
+    # create instance of speech_recognition
+    r = sr.Recognizer()
+
+    # Format the user input
+    tempVar = userFolder.replace("\\", "")
+    tempVar2 = tempVar.rstrip()
+    AJDownloadsFolder = os.path.abspath(tempVar2)
+    os.chdir(AJDownloadsFolder)
+    print("Downloads folder = " + AJDownloadsFolder)
+    print("")
+    print("Monitoring " + AJDownloadsFolder + "...")
+
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')

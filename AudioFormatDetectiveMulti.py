@@ -14,8 +14,8 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
-# from multiprocessing import Pool
-import multiprocessing
+from multiprocessing import Process, current_process
+import multiprocessing as mp
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
 red = lambda text: '\033[0;31m' + text + '\033[0m'
@@ -25,32 +25,14 @@ blue = lambda text: '\033[0;36m' + text + '\033[0m'
 magenta = lambda text: '\033[0;35m' + text + '\033[0m'
 cyan = lambda text: '\033[0;36m' + text + '\033[0m'
 white = lambda text: '\033[0;37m' + text + '\033[0m'
-# Suppress warnings from eyeD3
-eyed3.log.setLevel("ERROR")
-# Get AJ Downloads folder from user input
-userFolder = input("Drag your AJ downloads folder here and press enter...")
-# create instance of speech_recognition
-r = sr.Recognizer()
-
-# Format the user input
-tempVar = userFolder.replace("\\", "")
-tempVar2 = tempVar.rstrip()
-AJDownloadsFolder = os.path.abspath(tempVar2)
-os.chdir(AJDownloadsFolder)
-print("Downloads folder = " + AJDownloadsFolder)
-print("")
-print("Monitoring " + AJDownloadsFolder + "...")
-
 
 # Set up a "clear" with cross platform compatibility with Windows
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-
 def unzip():
     os.chdir(AJDownloadsFolder)
     cwd = os.getcwd()
-
     # Look for zip files and unzip then remove
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
@@ -291,24 +273,44 @@ def process_audio_files(currentFile):
 
 class Event(LoggingEventHandler):
     def on_moved(self, event):
-        print('\n' * 50)
         os.chdir(AJDownloadsFolder)
         cwd = os.getcwd()
         unzip()
+        print('\n' * 50)
         print("analysing...")
 
-        p = multiprocessing.Pool()
+        currentFileList = []
+        processes = []
+
         for directory, subdirectories, files in os.walk(cwd):
             for file in files:
-                currentFile = os.path.join(directory, file)
-                p = multiprocessing.Process(process_audio_files(currentFile))
-                p.start()
-        p.join()
-        p.close()
+                tempCurrentFile = os.path.join(directory, file)
+                currentFileList.append(tempCurrentFile)
+        for currentFile in currentFileList:
+            process = Process(target=process_audio_files, args=(currentFile,))
+            processes.append(process)
+            process.start()
         print("Finished!")
 
 
 if __name__ == "__main__":
+    mp.set_start_method('spawn')
+    # Suppress warnings from eyeD3
+    eyed3.log.setLevel("ERROR")
+    # Get AJ Downloads folder from user input
+    userFolder = input("Drag your AJ downloads folder here and press enter...")
+    # create instance of speech_recognition
+    r = sr.Recognizer()
+
+    # Format the user input
+    tempVar = userFolder.replace("\\", "")
+    tempVar2 = tempVar.rstrip()
+    AJDownloadsFolder = os.path.abspath(tempVar2)
+    os.chdir(AJDownloadsFolder)
+    print("Downloads folder = " + AJDownloadsFolder)
+    print("")
+    print("Monitoring " + AJDownloadsFolder + "...")
+
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
