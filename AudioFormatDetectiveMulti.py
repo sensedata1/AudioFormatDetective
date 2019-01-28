@@ -42,7 +42,7 @@ print("")
 print("Monitoring " + AJDownloadsFolder + "...")
 
 
-# Set up a "clear" with cross platform compatibility with Windoze
+# Set up a "clear" with cross platform compatibility with Windows
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
