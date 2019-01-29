@@ -6,7 +6,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioFormatDetectiveIMAP.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetectiveIMAP.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +20,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-115">
-              <caret line="136" column="14" selection-start-line="136" selection-start-column="14" selection-end-line="136" selection-end-column="14" />
+            <state relative-caret-position="306">
+              <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -30,7 +31,14 @@
       </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveIMAP.py">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="320">
+              <caret line="288" lean-forward="true" selection-start-line="288" selection-end-line="288" />
+              <folding>
+                <element signature="e#43#58#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -59,6 +67,7 @@
         <option value="$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py" />
         <option value="$PROJECT_DIR$/AudioFormatDetective6L.py" />
         <option value="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" />
+        <option value="$PROJECT_DIR$/AudioFormatDetectiveIMAP.py" />
       </list>
     </option>
   </component>
@@ -467,11 +476,26 @@
       <option name="project" value="LOCAL" />
       <updated>1548714196824</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Multiprocessing working now">
+      <created>1548716289602</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1548716289602</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Trying apply_async for greater reliability">
+      <created>1548746855717</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1548746855717</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7839416" visible="true" weight="0.24146147" />
       <window_info id="Structure" order="1" sideWeight="0.21605839" side_tool="true" weight="0.21445592" />
@@ -580,7 +604,8 @@
     <MESSAGE value="Multiprocessing working" />
     <MESSAGE value="Non mp version" />
     <MESSAGE value="Multiprocessing working now" />
-    <option name="LAST_COMMIT_MESSAGE" value="Multiprocessing working now" />
+    <MESSAGE value="Trying apply_async for greater reliability" />
+    <option name="LAST_COMMIT_MESSAGE" value="Trying apply_async for greater reliability" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -648,8 +673,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-115">
-          <caret line="136" column="14" selection-start-line="136" selection-start-column="14" selection-end-line="136" selection-end-column="14" />
+        <state relative-caret-position="306">
+          <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
@@ -657,7 +682,14 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveIMAP.py">
-      <provider selected="true" editor-type-id="text-editor" />
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="288" lean-forward="true" selection-start-line="288" selection-end-line="288" />
+          <folding>
+            <element signature="e#43#58#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
     </entry>
   </component>
   <component name="masterDetails">

@@ -285,7 +285,8 @@ class Event(LoggingEventHandler):
                         currentFileList.append(tempCurrentFile)
             # print(currentFileList)
             for currentFile in currentFileList:
-                    pool.apply_async(process_audio_files, (currentFile,))
+                    pool.imap_unordered(process_audio_files, (currentFile,))
+
                 # processes.append(process)
                 # process.start()
                 # print("Finished!")
