@@ -106,7 +106,7 @@ def process_audio_files(currentFile):
         #     vbrTrueFalse = "***"
         # convert mp3 to wav for voice recognition
         home = str(Path.home())
-        src = currentFile
+        src = currentFile[12000:]
         dst = os.path.join(home, "tempWav.wav")
         # convert wav to mp3
         sound = AudioSegment.from_mp3(src)  # [10000:]
@@ -122,13 +122,10 @@ def process_audio_files(currentFile):
                 recognisedSpeech = str((r.recognize_google(audio)))
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
-                    wm = "wmd"
                 if "jungle" in recognisedSpeech:
                     ch = red("WM")
-                    wm = "wmd"
                 if "audi" in recognisedSpeech:
                     ch = red("WM")
-                    wm = "wmd"
                 else:
                     ch = "  "
         except Exception as e:
@@ -204,13 +201,10 @@ def process_audio_files(currentFile):
                 # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
-                    wm = "wmd"
                 if "jungle" in recognisedSpeech:
                     ch = red("WM")
-                    wm = "wmd"
                 if "audi" in recognisedSpeech:
                     ch = red("WM")
-                    wm = "wmd"
                 else:
                     ch = "  "
         except Exception as e:
