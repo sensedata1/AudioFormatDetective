@@ -14,8 +14,8 @@ from colors import *
 from pydub import AudioSegment
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
-from multiprocessing import Process
-import multiprocessing as mp
+from multiprocessing import Process, Pool
+import multiprocessing
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
 red = lambda text: '\033[0;31m' + text + '\033[0m'
@@ -118,7 +118,7 @@ def process_audio_files(currentFile):
                 # print('Doing speech recognition')
                 audio = r.record(source, duration=12)
                 # print("Found the following speech in audio file...")
-                print(r.recognize_google(audio))
+                # print(r.recognize_google(audio))
                 recognisedSpeech = str((r.recognize_google(audio)))
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
@@ -134,6 +134,7 @@ def process_audio_files(currentFile):
         except Exception as e:
             ch = "  "
             wm = "nowm"
+            recognisedSpeech = ''
             # print(e)
         # if os.path.exists(dst):
         #     # clean up temp file    LEAVING TEMP FILE FOR NOW
@@ -152,7 +153,7 @@ def process_audio_files(currentFile):
         ######################################################################################
         #           PRINT MP3 DATA                                                           #
         ######################################################################################
-        print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
+        print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file, red(recognisedSpeech))
     # Look for wav files and evaluate
     if currentFile.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not currentFile.startswith(".") \
             and os.path.isfile(currentFile):
@@ -199,7 +200,7 @@ def process_audio_files(currentFile):
                 audio = r.record(source, duration=12)
                 # print("Found the following speech in audio file...")
                 recognisedSpeech = str((r.recognize_google(audio)))
-                print(recognisedSpeech)
+                # print(recognisedSpeech)
                 # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
@@ -217,6 +218,7 @@ def process_audio_files(currentFile):
             # print("No watermark detected in " + file)
             ch = "  "
             wm = "nowm"
+            recognisedSpeech = ''
         if sampleRate == 44100 and bits == 16 and channels == 2:  # and wm !="wmd":
             errorWav = green(" [ok]")
         else:
@@ -234,7 +236,7 @@ def process_audio_files(currentFile):
         ######################################################################################
         #           PRINT WAV DATA                                                           #
         ######################################################################################
-        print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
+        print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file, red(recognisedSpeech))
     # If any other audio file types are present mark as [ERR]
     if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
             and os.path.isfile(currentFile):
@@ -270,27 +272,30 @@ class Event(LoggingEventHandler):
         time.sleep(1)
         currentFileList = []
         # processes = []
-
-        for directory, subdirectories, files in os.walk(cwd):
-            for file in files:
-                tempCurrentFile = os.path.join(directory, file)
-                if tempCurrentFile.endswith\
-                            ((".mp3", ".MP3", ".Mp3", ".aac",
-                              ".aiff", ".aif", ".flac", ".m4a",
-                              ".m4p", ".wav", ".WAV", ".WaV",
-                              ".wAV", ".WAv", ".Wav")) and not tempCurrentFile.startswith(".") \
-                        and os.path.isfile(tempCurrentFile):
-                    currentFileList.append(tempCurrentFile)
-        # print(currentFileList)
-        for currentFile in currentFileList:
-            process = Process(target=process_audio_files, args=(currentFile,))
-            # processes.append(process)
-            process.start()
-        # print("Finished!")
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
+            for directory, subdirectories, files in os.walk(cwd):
+                for file in files:
+                    tempCurrentFile = os.path.join(directory, file)
+                    if tempCurrentFile.endswith\
+                                ((".mp3", ".MP3", ".Mp3", ".aac",
+                                  ".aiff", ".aif", ".flac", ".m4a",
+                                  ".m4p", ".wav", ".WAV", ".WaV",
+                                  ".wAV", ".WAv", ".Wav")) and not tempCurrentFile.startswith(".") \
+                            and os.path.isfile(tempCurrentFile):
+                        currentFileList.append(tempCurrentFile)
+            # print(currentFileList)
+            for currentFile in currentFileList:
+                    pool.apply_async(process_audio_files, (currentFile,))
+                # processes.append(process)
+                # process.start()
+                # print("Finished!")
+            pool.close()
+            pool.join()
+            print("All done!")
 
 
 if __name__ == "__main__":
-    mp.set_start_method('spawn')
+    multiprocessing.set_start_method('spawn')
     # Suppress warnings from eyeD3
     eyed3.log.setLevel("ERROR")
     # Get AJ Downloads folder from user input
