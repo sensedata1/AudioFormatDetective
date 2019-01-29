@@ -106,7 +106,7 @@ def process_audio_files(currentFile):
         #     vbrTrueFalse = "***"
         # convert mp3 to wav for voice recognition
         home = str(Path.home())
-        src = currentFile[12000:]
+        src = currentFile
         dst = os.path.join(home, "tempWav.wav")
         # convert wav to mp3
         sound = AudioSegment.from_mp3(src)  # [10000:]

@@ -32,8 +32,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveIMAP.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="320">
-              <caret line="288" lean-forward="true" selection-start-line="288" selection-end-line="288" />
+            <state relative-caret-position="283">
+              <caret line="110" column="28" lean-forward="true" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -490,7 +490,21 @@
       <option name="project" value="LOCAL" />
       <updated>1548746855717</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Using imap_unordered">
+      <created>1548796955672</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1548796955672</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Using imap_unordered">
+      <created>1548800396971</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1548800396971</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -605,7 +619,8 @@
     <MESSAGE value="Non mp version" />
     <MESSAGE value="Multiprocessing working now" />
     <MESSAGE value="Trying apply_async for greater reliability" />
-    <option name="LAST_COMMIT_MESSAGE" value="Trying apply_async for greater reliability" />
+    <MESSAGE value="Using imap_unordered" />
+    <option name="LAST_COMMIT_MESSAGE" value="Using imap_unordered" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -683,8 +698,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveIMAP.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="288" lean-forward="true" selection-start-line="288" selection-end-line="288" />
+        <state relative-caret-position="283">
+          <caret line="110" column="28" lean-forward="true" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
