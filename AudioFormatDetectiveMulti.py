@@ -1,4 +1,5 @@
-#!/usr/local/opt/python/libexec/bin/python
+#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+# Shebang for Studio Mac Pro #
 import datetime
 import logging
 import os

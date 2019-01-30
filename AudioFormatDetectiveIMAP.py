@@ -1,4 +1,5 @@
-#!/usr/local/opt/python/libexec/bin/python
+#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+# Shebang for Studio Mac Pro #
 import datetime
 import logging
 import os
@@ -16,6 +17,7 @@ from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
 from multiprocessing import Process, Pool
 import multiprocessing
+import sys
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
 red = lambda text: '\033[0;31m' + text + '\033[0m'

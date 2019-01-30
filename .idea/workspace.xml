@@ -6,8 +6,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f2edb21-21d5-4107-853a-b51a601825df" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/AudioFormatDetective.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AudioFormatDetective.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AudioFormatDetectiveIMAP.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetectiveIMAP.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioFormatDetectiveMulti.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +22,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
+            <state>
+              <caret selection-end-line="1" selection-end-column="30" />
               <folding>
                 <element signature="e#43#58#0" expanded="true" />
               </folding>
@@ -32,10 +34,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveIMAP.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="283">
-              <caret line="110" column="28" lean-forward="true" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
+            <state relative-caret-position="206">
+              <caret line="276" column="55" selection-start-line="276" selection-start-column="18" selection-end-line="276" selection-end-column="55" />
               <folding>
-                <element signature="e#43#58#0" expanded="true" />
+                <element signature="e#95#110#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -72,9 +74,9 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
-    <option name="width" value="1280" />
-    <option name="height" value="777" />
+    <option name="x" value="1920" />
+    <option name="width" value="1920" />
+    <option name="height" value="1057" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -91,6 +93,11 @@
             <path>
               <item name="AudioFormatDetective" type="b2602c69:ProjectViewProjectNode" />
               <item name="AudioFormatDetective" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="AudioFormatDetective" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AudioFormatDetective" type="462c0819:PsiDirectoryNode" />
+              <item name="dist" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -476,42 +483,14 @@
       <option name="project" value="LOCAL" />
       <updated>1548714196824</updated>
     </task>
-    <task id="LOCAL-00033" summary="Multiprocessing working now">
-      <created>1548716289602</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1548716289602</updated>
-    </task>
-    <task id="LOCAL-00034" summary="Trying apply_async for greater reliability">
-      <created>1548746855717</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1548746855717</updated>
-    </task>
-    <task id="LOCAL-00035" summary="Using imap_unordered">
-      <created>1548796955672</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1548796955672</updated>
-    </task>
-    <task id="LOCAL-00036" summary="Using imap_unordered">
-      <created>1548800396971</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1548800396971</updated>
-    </task>
-    <option name="localTasksCounter" value="37" />
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="777" extended-state="6" />
+    <frame x="1920" y="0" width="1920" height="1057" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7839416" visible="true" weight="0.24146147" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7839416" visible="true" weight="0.15060559" />
       <window_info id="Structure" order="1" sideWeight="0.21605839" side_tool="true" weight="0.21445592" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -618,9 +597,7 @@
     <MESSAGE value="Multiprocessing working" />
     <MESSAGE value="Non mp version" />
     <MESSAGE value="Multiprocessing working now" />
-    <MESSAGE value="Trying apply_async for greater reliability" />
-    <MESSAGE value="Using imap_unordered" />
-    <option name="LAST_COMMIT_MESSAGE" value="Using imap_unordered" />
+    <option name="LAST_COMMIT_MESSAGE" value="Multiprocessing working now" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective-MacOS-oneFile.spec" />
@@ -653,13 +630,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2018.3/python_stubs/-538153978/itertools.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1167">
-          <caret line="595" column="6" selection-start-line="595" selection-start-column="6" selection-end-line="595" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2018.3/python_stubs/-538153978/itertools.py" />
     <entry file="file://$PROJECT_DIR$/Test/AudioFormatDetective6LLZwm.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="318">
@@ -670,12 +641,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Test/dist/AudioFormatDetective6LLZwm3">
-      <provider selected="true" editor-type-id="LargeFileEditor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Test/dist/AudioFormatDetective6LLZwm3" />
+    <entry file="file://$PROJECT_DIR$/.gitignore" />
     <entry file="file://$PROJECT_DIR$/AudioFormatDetective6L.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="431">
@@ -688,8 +655,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveMulti.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
+        <state>
+          <caret selection-end-line="1" selection-end-column="30" />
           <folding>
             <element signature="e#43#58#0" expanded="true" />
           </folding>
@@ -698,10 +665,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AudioFormatDetectiveIMAP.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="283">
-          <caret line="110" column="28" lean-forward="true" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
+        <state relative-caret-position="206">
+          <caret line="276" column="55" selection-start-line="276" selection-start-column="18" selection-end-line="276" selection-end-column="55" />
           <folding>
-            <element signature="e#43#58#0" expanded="true" />
+            <element signature="e#95#110#0" expanded="true" />
           </folding>
         </state>
       </provider>
