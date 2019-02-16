@@ -149,7 +149,7 @@ def detect():
                     with srVoiceTestWav as source:
                         audio = r.record(source, duration=12)
                         # print("Found the following speech in audio file...")
-                        print(r.recognize_google(audio))
+                        # print(r.recognize_google(audio))
                         recognisedSpeech = str((r.recognize_google(audio)))
                         if "audio" in recognisedSpeech:
                             ch = red("WM")
@@ -169,6 +169,7 @@ def detect():
                     # print("No watermark detected in " + file)
                     ch = "  "
                     wm = "nowm"
+                    recognisedSpeech = ""
 
                 if os.path.exists(dst):
                     # clean up temp file
@@ -190,7 +191,7 @@ def detect():
                 ######################################################################################
                 #           PRINT MP3 DATA                                                           #
                 ######################################################################################
-                print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file)
+                print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file, red(recognisedSpeech))
 
                 # rename files so they're ignored on next pass
                 if os.path.isfile(currentFile):
@@ -254,7 +255,7 @@ def detect():
                     with srVoiceTestWav as source:
                         audio = r.record(source, duration=12)
                         # print("Found the following speech in audio file...")
-                        print(r.recognize_google(audio))
+                        # print(r.recognize_google(audio))
                         recognisedSpeech = str((r.recognize_google(audio)))
 
                         # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
@@ -277,7 +278,7 @@ def detect():
                     # print("No watermark detected in " + file)
                     ch = "  "
                     wm = "nowm"
-
+                    recognisedSpeech = ""
                 if sampleRate == 44100 and bits == 16 and channels == 2:  # and wm !="wmd":
                     errorWav = green(" [ok]")
 
@@ -297,7 +298,7 @@ def detect():
                 ######################################################################################
                 #           PRINT WAV DATA                                                           #
                 ######################################################################################
-                print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file)
+                print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file, red(recognisedSpeech))
 
                 # rename files so they're ignored on next pass
 
@@ -346,7 +347,7 @@ def detect():
 
 # Watch folder and run main function when a file is downloaded into folder
 class Event(LoggingEventHandler):
-    def on_created(self, event):
+    def on_moved(self, event):
         print('\n' * 50)
         detect()
         print("Finished!")
