@@ -54,39 +54,6 @@ def detect():
     os.chdir(AJDownloadsFolder)
     cwd = os.getcwd()
 
-    # # Look for zip files and unzip then remove
-    # for directory, subdirectories, files in os.walk(cwd):
-    #     for file in files:
-    #         # print(file) Debugging output
-    #         if file.endswith((".zip", ".ZIP")):
-    #
-    #             currentZipFile = os.path.join(directory, file)
-    #             zipFolderName = os.path.splitext(currentZipFile)[0]
-    #             print(file)
-    #
-    #             with ZipFile(currentZipFile, 'r') as zipArchive:
-    #                 try:
-    #                     zipArchive.extractall(zipFolderName)
-    #                     print('Extracting...')
-    #                     print('Done!')
-    #                     print("")
-    #                     os.remove(currentZipFile)
-    #                 except Exception as e:
-    #                     # print("zip file corrupt")
-    #                     print("Zip already extracted?")
-    #                     print(e)
-    #
-    #                 hiddenFolder = (os.path.join(zipFolderName, "__MACOSX"))
-    #                 if os.path.isdir(hiddenFolder):
-    #                     try:
-    #                         shutil.rmtree(hiddenFolder)
-    #                         print("Found and removed __MACOSX hidden folder...")
-    #                         # print("")
-    #                     except:
-    #                         print("unable to remove __MACOSX hidden folder...")
-
-    # Look for mp3 files and evaluate
-
     for directory, subdirectories, files in os.walk(cwd):
         for file in files:
 
@@ -122,17 +89,7 @@ def detect():
                 except:
 
                     bits = "  "
-                # try:
-                #     if bitRate[0] is True:
-                #         vbrTrueFalse = "vbr"
-                #     else:
-                #         vbrTrueFalse = "cbr"
-                # except:
-                #     vbrTrueFalse = "***"
 
-                # convert mp3 to wav for voice recognition
-                # files
-                ch = "   "
                 home = str(Path.home())
 
                 src = currentFile
@@ -148,8 +105,7 @@ def detect():
                 try:
                     with srVoiceTestWav as source:
                         audio = r.record(source, duration=12)
-                        # print("Found the following speech in audio file...")
-                        # print(r.recognize_google(audio))
+
                         recognisedSpeech = str((r.recognize_google(audio)))
                         if "audio" in recognisedSpeech:
                             ch = red("WM")
@@ -165,8 +121,7 @@ def detect():
 
 
                 except Exception as e:
-                    # print(e)
-                    # print("No watermark detected in " + file)
+
                     ch = "  "
                     wm = "nowm"
                     recognisedSpeech = ""
@@ -254,11 +209,8 @@ def detect():
                 try:
                     with srVoiceTestWav as source:
                         audio = r.record(source, duration=12)
-                        # print("Found the following speech in audio file...")
-                        # print(r.recognize_google(audio))
-                        recognisedSpeech = str((r.recognize_google(audio)))
 
-                        # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
+                        recognisedSpeech = str((r.recognize_google(audio)))
 
                         if "audio" in recognisedSpeech:
 
