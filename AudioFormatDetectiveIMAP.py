@@ -18,6 +18,7 @@ from watchdog.observers import Observer
 from multiprocessing import Process, Pool
 import multiprocessing
 import sys
+
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
 red = lambda text: '\033[0;31m' + text + '\033[0m'
@@ -30,9 +31,12 @@ white = lambda text: '\033[0;37m' + text + '\033[0m'
 
 # create global instance of speech_recognition
 r = sr.Recognizer()
+
+
 # Set up a "clear" with cross platform compatibility with Windows
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def unzip():
     os.chdir(AJDownloadsFolder)
@@ -45,26 +49,30 @@ def unzip():
                 currentZipFile = os.path.join(directory, file)
                 zipFolderName = os.path.splitext(currentZipFile)[0]
                 print(file)
-                with ZipFile(currentZipFile, 'r') as zipArchive:
-                    try:
-                        zipArchive.extractall(zipFolderName)
-                        print('Extracting...')
-                        print('Done!')
-                        print("")
-                        os.remove(currentZipFile)
-                    except Exception as e:
-                        # print("zip file corrupt")
-                        print("Zip already extracted?")
-                        print(e)
-
-                    hiddenFolder = (os.path.join(zipFolderName, "__MACOSX"))
-                    if os.path.isdir(hiddenFolder):
+                try:
+                    with ZipFile(currentZipFile, 'r') as zipArchive:
                         try:
-                            shutil.rmtree(hiddenFolder)
-                            print("Found and removed __MACOSX hidden folder...")
-                            # print("")
-                        except:
-                            print("unable to remove __MACOSX hidden folder...")
+                            zipArchive.extractall(zipFolderName)
+                            print('Extracting...')
+                            print('Done!')
+                            print("")
+                            os.remove(currentZipFile)
+                        except Exception as e:
+                            # print("zip file corrupt")
+                            print("Zip already extracted?")
+                            print(e)
+
+                        hiddenFolder = (os.path.join(zipFolderName, "__MACOSX"))
+                        if os.path.isdir(hiddenFolder):
+                            try:
+                                shutil.rmtree(hiddenFolder)
+                                print("Found and removed __MACOSX hidden folder...")
+                                # print("")
+                            except:
+                                print("unable to remove __MACOSX hidden folder...")
+                except Exception as e:
+                    print(e)
+                    print("Unzip failed, zipfile may be corrupt")
 
 
 def process_audio_files(currentFile):
@@ -99,13 +107,7 @@ def process_audio_files(currentFile):
             bits = (audiotools.open(currentFile).bits_per_sample())
         except:
             bits = "  "
-        # try:
-        #     if bitRate[0] is True:
-        #         vbrTrueFalse = "vbr"
-        #     else:
-        #         vbrTrueFalse = "cbr"
-        # except:
-        #     vbrTrueFalse = "***"
+
         # convert mp3 to wav for voice recognition
         home = str(Path.home())
         src = currentFile
@@ -117,10 +119,9 @@ def process_audio_files(currentFile):
         srVoiceTestWav = sr.AudioFile(dst)
         try:
             with srVoiceTestWav as source:
-                # print('Doing speech recognition')
-                audio = r.record(source, duration=12)
-                # print("Found the following speech in audio file...")
-                # print(r.recognize_google(audio))
+
+                audio = r.record(source, duration=10)
+
                 recognisedSpeech = str((r.recognize_google(audio)))
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
@@ -134,10 +135,7 @@ def process_audio_files(currentFile):
             ch = "  "
             wm = "nowm"
             recognisedSpeech = ''
-            # print(e)
-        # if os.path.exists(dst):
-        #     # clean up temp file    LEAVING TEMP FILE FOR NOW
-        #     os.remove(dst)
+
         if channels == "Joint stereo" or "Stereo" or "stereo" or "Joint Stereo":
             channels = 2
         try:
@@ -173,20 +171,20 @@ def process_audio_files(currentFile):
             channels = int(audiotools.open(currentFile).channels())
         except:
             channels = ""
-        try:
-            home = str(Path.home())
-            LACpath = os.path.join(home, "LAC")
-            a = [LACpath, currentFile]
-
-            p = subprocess.Popen(a, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-            p2 = subprocess.Popen(['grep', 'Result'], stdin=p.stdout,
-                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            sys.stdout.flush()
-            for line in iter(p2.stdout.readline, b''):
-                LACout = str(line)
-        except Exception as ex:
-            print("crap!")
-            print(ex)
+            # try:
+            #     home = str(Path.home())
+            #     LACpath = os.path.join(home, "LAC")
+            #     a = [LACpath, currentFile]
+            #
+            #     p = subprocess.Popen(a, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+            #     p2 = subprocess.Popen(['grep', 'Result'], stdin=p.stdout,
+            #                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #     sys.stdout.flush()
+            #     for line in iter(p2.stdout.readline, b''):
+            #         LACout = str(line)
+            # except Exception as ex:
+            #     print("crap!")
+            #     print(ex)
             LACout = ''
         try:
             durationSecsWav = int(audiotools.open(currentFile).seconds_length())
@@ -196,11 +194,10 @@ def process_audio_files(currentFile):
         srVoiceTestWav = sr.AudioFile(currentFile)
         try:
             with srVoiceTestWav as source:
-                audio = r.record(source, duration=12)
-                # print("Found the following speech in audio file...")
+                audio = r.record(source, duration=10)
+
                 recognisedSpeech = str((r.recognize_google(audio)))
-                # print(recognisedSpeech)
-                # if "audio" or "jungle" or "audiojungle" in recognisedSpeech:
+
                 if "audio" in recognisedSpeech:
                     ch = red("WM")
                 if "jungle" in recognisedSpeech:
@@ -210,8 +207,7 @@ def process_audio_files(currentFile):
                 else:
                     ch = "  "
         except Exception as e:
-            # print(e)
-            # print("No watermark detected in " + file)
+
             ch = "  "
             wm = "nowm"
             recognisedSpeech = ''
@@ -220,14 +216,14 @@ def process_audio_files(currentFile):
         else:
             errorWav = red("[ERR]")
             LACout = ""
-        if "Result: Upsampled" in LACout:
-            gap = yellow("Upsamp")
-        if "Result: Upscaled" in LACout:
-            gap = yellow("Upscal")
-        if "Result: Transcoded" in LACout:
-            gap = yellow("Transc")
-        if "Result: Clean" in LACout:
-            gap = blue(" Clean")
+        # if "Result: Upsampled" in LACout:
+        #     gap = yellow("Upsamp")
+        # if "Result: Upscaled" in LACout:
+        #     gap = yellow("Upscal")
+        # if "Result: Transcoded" in LACout:
+        #     gap = yellow("Transc")
+        # if "Result: Clean" in LACout:
+        #     gap = blue(" Clean")
         # gap = LACout
         ######################################################################################
         #           PRINT WAV DATA                                                           #
@@ -253,6 +249,7 @@ def process_audio_files(currentFile):
         ch = ""
         print(errorWav, sampleRate, bits, channels, ch, "         ", file)
 
+
 # Watch folder and run main function when a file is downloaded into folder
 
 
@@ -267,25 +264,22 @@ class Event(LoggingEventHandler):
         print("analysing...")
         time.sleep(1)
         currentFileList = []
-        # processes = []
-        with Pool(processes=multiprocessing.cpu_count()) as pool:
+
+        with Pool(processes=multiprocessing.cpu_count() - 8) as pool:
             for directory, subdirectories, files in os.walk(cwd):
                 for file in files:
                     tempCurrentFile = os.path.join(directory, file)
-                    if tempCurrentFile.endswith\
+                    if tempCurrentFile.endswith \
                                 ((".mp3", ".MP3", ".Mp3", ".aac",
                                   ".aiff", ".aif", ".flac", ".m4a",
                                   ".m4p", ".wav", ".WAV", ".WaV",
                                   ".wAV", ".WAv", ".Wav")) and not tempCurrentFile.startswith(".") \
                             and os.path.isfile(tempCurrentFile):
                         currentFileList.append(tempCurrentFile)
-            # print(currentFileList)
-            for currentFile in currentFileList:
-                    pool.imap_unordered(process_audio_files, (currentFile,))
 
-                # processes.append(process)
-                # process.start()
-                # print("Finished!")
+            for currentFile in currentFileList:
+                pool.imap_unordered(process_audio_files, (currentFile,))
+
             pool.close()
             pool.join()
             print("All done!")
@@ -320,5 +314,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
-
-
