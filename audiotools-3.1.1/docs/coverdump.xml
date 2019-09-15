@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2007-2015  Brian Langenberger
+This work is licensed under the
+Creative Commons Attribution-Share Alike 3.0 United States License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+Creative Commons,
+171 Second Street, Suite 300,
+San Francisco, California, 94105, USA.
+-->
+<manpage>
+  <utility>coverdump</utility>
+  <author>Brian Langenberger</author>
+  <section>1</section>
+  <name>extracts cover images to files</name>
+  <title>Cover Image Extractor</title>
+  <synopsis>[OPTIONS] &lt;track&gt;</synopsis>
+  <description>
+    coverdump takes an audio track and extracts all of its embedded
+    cover images to individual files.
+  </description>
+  <options>
+    <option short="h" long="help">show a list of options and exit</option>
+    <option short="d" long="dir" arg="directory">
+      the target directory for the extracted image files;
+      if none is given, the current working directory is used
+    </option>
+    <option short="p" long="prefix" arg="prefix">
+      a string to prefix to each extracted image file
+    </option>
+    <option short="V" long="verbose" arg="verbosity">
+      The level of output to display.
+      Choose between 'normal', 'quiet' and 'debug'.
+    </option>
+  </options>
+  <examples>
+    <example>
+      <description>
+        Extract the covert art embedded in track.flac to the images/ directory:
+      </description>
+      <command>
+        coverdump track.flac -d images/
+      </command>
+    </example>
+  </examples>
+</manpage>

@@ -1,0 +1,146 @@
+#!/usr/bin/python
+
+# Audio Tools, a module and set of tools for manipulating audio data
+# Copyright (C) 2007-2015  Brian Langenberger
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+import os.path
+from decimal import Decimal
+import audiotools
+import audiotools.text as _
+
+
+def audio_files(msg, args):
+    for audio_file in audiotools.open_files(filter(os.path.isfile, args),
+                                            messenger=msg,
+                                            warn_duplicates=True):
+        yield audio_file
+
+    for parent_dir in filter(os.path.isdir, args):
+        for audio_file in audiotools.open_directory(parent_dir,
+                                                    sorted=False,
+                                                    messenger=msg):
+            yield audio_file
+
+
+class FormatSummary(object):
+    def __init__(self):
+        self.total_length = 0
+        self.file_count = 0
+        self.total_size = 0
+
+    def add(self, audiofile):
+        self.total_length += audiofile.seconds_length()
+        self.file_count += 1
+        self.total_size += os.path.getsize(audiofile.filename)
+
+    def to_row(self, name, table):
+        row = table.row()
+        row.add_column(name, "right")
+        row.add_column(u" ")
+        row.add_column(u"%d" % (self.file_count), "right")
+        row.add_column(u" ")
+        format_length = int(self.total_length)
+        row.add_column(_.LAB_TRACKLENGTH %
+                       {"hours": format_length // (60 * 60),
+                        "minutes": (format_length // 60) % 60,
+                        "seconds": format_length % 60},
+                       "right")
+        row.add_column(u" ")
+        if self.total_size > (2 ** 40):
+            # terabytes
+            total_size = u"%sT" % \
+                ((self.total_size /
+                  Decimal(2 ** 40)).quantize(Decimal("1.0")))
+        elif self.total_size > (2 ** 30):
+            # gigabytes
+            total_size = u"%sG" % \
+                ((self.total_size /
+                  Decimal(2 ** 30)).quantize(Decimal("1.0")))
+        elif self.total_size > (2 ** 20):
+            # megabytes
+            total_size = u"%sM" % \
+                ((self.total_size /
+                  Decimal(2 ** 20)).quantize(Decimal("1.0")))
+        elif self.total_size > (2 ** 10):
+            # kilobytes
+            total_size = u"%sK" % \
+                ((self.total_size /
+                  Decimal(2 ** 10)).quantize(Decimal("1.0")))
+        else:
+            # bytes
+            total_size = u"%d" % (self.total_size)
+
+        row.add_column(total_size, "right")
+
+
+if (__name__ == '__main__'):
+    import argparse
+
+    parser = argparse.ArgumentParser(description=_.DESCRIPTION_TRACKLENGTH)
+
+    parser.add_argument("--version",
+                        action="version",
+                        version="Python Audio Tools %s" % (audiotools.VERSION))
+
+    parser.add_argument("filenames",
+                        metavar="PATH",
+                        nargs="+",
+                        help=_.OPT_INPUT_FILENAME_OR_DIR)
+
+    options = parser.parse_args()
+    msg = audiotools.Messenger()
+
+    format_summaries = {}
+    total_summary = FormatSummary()
+
+    try:
+        for audio_file in audio_files(msg, options.filenames):
+            if audio_file.NAME not in format_summaries.keys():
+                format_summaries[audio_file.NAME] = FormatSummary()
+            format_summaries[audio_file.NAME].add(audio_file)
+            total_summary.add(audio_file)
+    except KeyboardInterrupt:
+        import sys
+        msg.ansi_clearline()
+        msg.error(_.ERR_CANCELLED)
+        sys.exit(1)
+
+    if total_summary.file_count > 0:
+        table = audiotools.output_table()
+
+        row = table.row()
+        row.add_column(_.LAB_TRACKLENGTH_FILE_FORMAT, "right")
+        row.add_column(u" ")
+        row.add_column(_.LAB_TRACKLENGTH_FILE_COUNT, "right")
+        row.add_column(u" ")
+        row.add_column(_.LAB_TRACKLENGTH_FILE_LENGTH, "right")
+        row.add_column(u" ")
+        row.add_column(_.LAB_TRACKLENGTH_FILE_SIZE, "right")
+
+        table.divider_row([_.DIV, u" ", _.DIV, u" ", _.DIV, u" ", _.DIV])
+
+        for name in sorted(format_summaries.keys()):
+            format_summaries[name].to_row(
+                name if audiotools.PY3 else name.decode("UTF-8"), table)
+
+        if len(format_summaries.keys()) > 1:
+            table.divider_row([_.DIV, u" ", _.DIV, u" ", _.DIV, u" ", _.DIV])
+            total_summary.to_row(_.LAB_TRACKLENGTH_FILE_TOTAL, table)
+
+        for row in table.format(msg.output_isatty()):
+            msg.output(row)

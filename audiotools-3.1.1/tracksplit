@@ -1,0 +1,631 @@
+#!/usr/bin/python
+
+# Audio Tools, a module and set of tools for manipulating audio data
+# Copyright (C) 2007-2015  Brian Langenberger
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+import sys
+import os
+import os.path
+import audiotools
+import audiotools.cue
+import audiotools.ui
+import audiotools.text as _
+import termios
+from fractions import Fraction
+
+
+def merge_metadatas(metadatas):
+    if len(metadatas) == 0:
+        return audiotools.MetaData()
+    elif len(metadatas) == 1:
+        return metadatas[0]
+    else:
+        merged = metadatas[0]
+        for to_merge in metadatas[1:]:
+            merged = merged.intersection(to_merge)
+        return merged
+
+
+def split(progress, source_audiofile, destination_filename,
+          destination_class, compression, metadata,
+          pcm_frames_offset, total_pcm_frames):
+    try:
+        pcmreader = source_audiofile.to_pcm()
+
+        # if PCMReader has seek()
+        # use it to reduce the amount of frames to skip
+        if hasattr(pcmreader, "seek") and callable(pcmreader.seek):
+            pcm_frames_offset -= pcmreader.seek(pcm_frames_offset)
+
+        destination_audiofile = destination_class.from_pcm(
+            str(destination_filename),
+            audiotools.PCMReaderProgress(
+                audiotools.PCMReaderWindow(pcmreader,
+                                           pcm_frames_offset,
+                                           total_pcm_frames),
+                total_pcm_frames,
+                progress),
+            compression,
+            total_pcm_frames)
+
+        if metadata is not None:
+            destination_audiofile.set_metadata(metadata)
+    except KeyboardInterrupt:
+        # remove partially split file, if any
+        try:
+            os.unlink(str(destination_filename))
+        except OSError:
+            pass
+
+    return str(destination_filename)
+
+
+def split_raw(progress, source_filename,
+              sample_rate, channels, channel_mask, bits_per_sample,
+              destination_filename, destination_class, compression,
+              metadata, pcm_frames_offset, total_pcm_frames):
+    f = open(source_filename, "rb")
+    try:
+        # skip initial offset
+        f.seek(pcm_frames_offset * channels * (bits_per_sample // 8))
+
+        destination_audiofile = destination_class.from_pcm(
+            str(destination_filename),
+            audiotools.PCMReaderProgress(
+                audiotools.PCMReaderHead(
+                    audiotools.PCMFileReader(file=f,
+                                             sample_rate=sample_rate,
+                                             channels=channels,
+                                             channel_mask=channel_mask,
+                                             bits_per_sample=bits_per_sample),
+                    total_pcm_frames),
+                total_pcm_frames,
+                progress),
+            compression,
+            total_pcm_frames)
+
+        if metadata is not None:
+            destination_audiofile.set_metadata(metadata)
+
+        return str(destination_filename)
+    except KeyboardInterrupt:
+        # remove partially split file, if any
+        try:
+            os.unlink(str(destination_filename))
+        except OSError:
+            pass
+    finally:
+        f.close()
+
+
+if (__name__ == '__main__'):
+    import argparse
+
+    parser = argparse.ArgumentParser(description=_.DESCRIPTION_TRACKSPLIT)
+
+    parser.add_argument("--version",
+                        action="version",
+                        version="Python Audio Tools %s" % (audiotools.VERSION))
+
+    parser.add_argument("-I", "--interactive",
+                        action="store_true",
+                        default=False,
+                        dest="interactive",
+                        help=_.OPT_INTERACTIVE_OPTIONS)
+
+    parser.add_argument("--cue",
+                        dest="cuesheet",
+                        metavar="FILENAME",
+                        help=_.OPT_CUESHEET_TRACKSPLIT)
+
+    parser.add_argument("-V", "--verbose",
+                        dest="verbosity",
+                        choices=audiotools.VERBOSITY_LEVELS,
+                        default=audiotools.DEFAULT_VERBOSITY,
+                        help=_.OPT_VERBOSE)
+
+    conversion = parser.add_argument_group(_.OPT_CAT_ENCODING)
+
+    conversion.add_argument(
+        "-t", "--type",
+        dest="type",
+        choices=sorted(list(t.NAME for t in audiotools.AVAILABLE_TYPES
+                            if t.supports_from_pcm()) + ["help"]),
+        help=_.OPT_TYPE)
+
+    conversion.add_argument("-q", "--quality",
+                            dest="quality",
+                            help=_.OPT_QUALITY)
+
+    conversion.add_argument("-d", "--dir",
+                            dest="dir",
+                            default=".",
+                            help=_.OPT_DIR)
+
+    conversion.add_argument("--format",
+                            default=None,
+                            dest="format",
+                            help=_.OPT_FORMAT)
+
+    conversion.add_argument("-j", "--joint",
+                            type=int,
+                            default=audiotools.MAX_JOBS,
+                            dest="max_processes",
+                            help=_.OPT_JOINT)
+
+    lookup = parser.add_argument_group(_.OPT_CAT_CD_LOOKUP)
+
+    lookup.add_argument("--musicbrainz-server",
+                        dest="musicbrainz_server",
+                        default=audiotools.MUSICBRAINZ_SERVER,
+                        metavar="HOSTNAME")
+
+    lookup.add_argument("--musicbrainz-port",
+                        type=int,
+                        dest="musicbrainz_port",
+                        default=audiotools.MUSICBRAINZ_PORT,
+                        metavar="PORT")
+
+    lookup.add_argument("--no-musicbrainz",
+                        action="store_false",
+                        dest="use_musicbrainz",
+                        default=audiotools.MUSICBRAINZ_SERVICE,
+                        help=_.OPT_NO_MUSICBRAINZ)
+
+    lookup.add_argument("--freedb-server",
+                        dest="freedb_server",
+                        default=audiotools.FREEDB_SERVER,
+                        metavar="HOSTNAME")
+
+    lookup.add_argument("--freedb-port",
+                        type=int,
+                        dest="freedb_port",
+                        default=audiotools.FREEDB_PORT,
+                        metavar="PORT")
+
+    lookup.add_argument("--no-freedb",
+                        action="store_false",
+                        dest="use_freedb",
+                        default=audiotools.FREEDB_SERVICE,
+                        help=_.OPT_NO_FREEDB)
+
+    lookup.add_argument("-D", "--default",
+                        dest="use_default",
+                        action="store_true",
+                        default=False,
+                        help=_.OPT_DEFAULT)
+
+    metadata = parser.add_argument_group(_.OPT_CAT_METADATA)
+
+    metadata.add_argument("--album-number",
+                          dest="album_number",
+                          type=int,
+                          default=0,
+                          help=_.OPT_ALBUM_NUMBER)
+
+    metadata.add_argument("--album-total",
+                          dest="album_total",
+                          type=int,
+                          default=0,
+                          help=_.OPT_ALBUM_TOTAL)
+
+    metadata.add_argument("--replay-gain",
+                          action="store_true",
+                          default=None,
+                          dest="add_replay_gain",
+                          help=_.OPT_REPLAY_GAIN)
+
+    metadata.add_argument("--no-replay-gain",
+                          action="store_false",
+                          default=None,
+                          dest="add_replay_gain",
+                          help=_.OPT_NO_REPLAY_GAIN)
+
+    parser.add_argument("filename",
+                        metavar="FILENAME",
+                        help=_.OPT_INPUT_FILENAME)
+
+    options = parser.parse_args()
+
+    msg = audiotools.Messenger(options.verbosity == "quiet")
+
+    # ensure interactive mode is available, if selected
+    if options.interactive and (not audiotools.ui.AVAILABLE):
+        audiotools.ui.not_available_message(msg)
+        sys.exit(1)
+
+    # get the AudioFile class we are converted to
+    if options.type == 'help':
+        audiotools.ui.show_available_formats(msg)
+        sys.exit(0)
+    if options.type is not None:
+        AudioType = audiotools.TYPE_MAP[options.type]
+    else:
+        AudioType = audiotools.TYPE_MAP[audiotools.DEFAULT_TYPE]
+
+    # ensure the selected compression is compatible with that class
+    if options.quality == 'help':
+        audiotools.ui.show_available_qualities(msg, AudioType)
+        sys.exit(0)
+    elif options.quality is None:
+        options.quality = audiotools.__default_quality__(AudioType.NAME)
+    elif options.quality not in AudioType.COMPRESSION_MODES:
+        msg.error(_.ERR_UNSUPPORTED_COMPRESSION_MODE %
+                  {"quality": options.quality,
+                   "type": AudioType.NAME})
+        sys.exit(1)
+
+    try:
+        filename = audiotools.Filename(options.filename)
+        audiofile = audiotools.open(str(filename))
+        input_filename = audiotools.Filename(audiofile.filename)
+        input_filenames = {input_filename}
+    except audiotools.UnsupportedFile:
+        msg.error(_.ERR_UNSUPPORTED_FILE % (filename,))
+        sys.exit(1)
+    except audiotools.InvalidFile as err:
+        msg.error(str(err))
+        sys.exit(1)
+    except IOError:
+        msg.error(_.ERR_OPEN_IOERROR % (filename,))
+        sys.exit(1)
+
+    base_directory = options.dir
+    encoded_filenames = []
+
+    if options.cuesheet is not None:
+        # grab the cuesheet we're using to split tracks
+        # (this overrides an embedded cuesheet)
+        try:
+            cuesheet = audiotools.read_sheet(options.cuesheet)
+            input_filenames.add(audiotools.Filename(options.cuesheet))
+        except audiotools.SheetException as err:
+            msg.error(err)
+            sys.exit(1)
+    else:
+        cuesheet = audiofile.get_cuesheet()
+        if cuesheet is None:
+            msg.error(_.ERR_TRACKSPLIT_NO_CUESHEET)
+            sys.exit(1)
+
+    if not cuesheet.image_formatted():
+        msg.error(_.ERR_CUE_INVALID_FORMAT)
+        sys.exit(1)
+
+    cuesheet_offsets = [cuesheet.track_offset(t) for t in
+                        cuesheet.track_numbers()]
+
+    cuesheet_lengths = [cuesheet.track_length(t) for t in
+                        cuesheet.track_numbers()]
+
+    audiofile_size = audiofile.seconds_length()
+
+    if cuesheet_lengths[-1] is None:
+        # last track length unknown, so ensure there's enough room
+        # based on the total size of the source
+        last_track_size = (audiofile_size -
+                           sum(cuesheet_lengths[0:-1]) -
+                           cuesheet.pre_gap())
+        if last_track_size >= 0:
+            cuesheet_lengths.pop()
+            cuesheet_lengths.append(last_track_size)
+        else:
+            msg.error(_.ERR_TRACKSPLIT_OVERLONG_CUESHEET)
+            sys.exit(1)
+    else:
+        # last track length is known, so ensure the size
+        # of all lengths and the pre-gap is the same size as the source
+        if (cuesheet.pre_gap() + sum(cuesheet_lengths)) != audiofile_size:
+            msg.error(_.ERR_TRACKSPLIT_OVERLONG_CUESHEET)
+            sys.exit(1)
+
+    output_track_count = len(cuesheet)
+
+    # check whether pre-gap data should be preserved, if any
+    if cuesheet.pre_gap() > 0:
+        with audiotools.BufferedPCMReader(audiofile.to_pcm()) as r:
+            # this could be optimized better
+            # but it is a rare and unusual case
+            preserve_pre_gap = set(r.read(int(cuesheet.pre_gap() *
+                                              audiofile.sample_rate()))) != {0}
+
+            if preserve_pre_gap:
+                cuesheet_offsets.insert(0, Fraction(0, 1))
+                cuesheet_lengths.insert(0, cuesheet.pre_gap())
+    else:
+        preserve_pre_gap = False
+
+    # use cuesheet to query metadata services for metadata choices
+    try:
+        metadata_choices = audiotools.sheet_metadata_lookup(
+            sheet=cuesheet,
+            total_pcm_frames=audiofile.total_frames(),
+            sample_rate=audiofile.sample_rate(),
+            musicbrainz_server=options.musicbrainz_server,
+            musicbrainz_port=options.musicbrainz_port,
+            freedb_server=options.freedb_server,
+            freedb_port=options.freedb_port,
+            use_musicbrainz=options.use_musicbrainz,
+            use_freedb=options.use_freedb)
+    except KeyboardInterrupt:
+        msg.ansi_clearline()
+        msg.error(_.ERR_CANCELLED)
+        sys.exit(1)
+
+    if preserve_pre_gap:
+        # prepend "track 0" track to start of list for each choice
+        for choice in metadata_choices:
+            track_0 = merge_metadatas(choice)
+            track_0.track_number = 0
+            choice.insert(0, track_0)
+
+    # populate any empty Album-level metadata fields
+    # with those from original file, if any
+    album_metadata = audiofile.get_metadata()
+    if album_metadata is not None:
+        album_fields = {attr: field for (attr, field) in
+                        album_metadata.filled_fields()
+                        if (attr in {"album_name",
+                                     "artist_name",
+                                     "performer_name",
+                                     "composer_name",
+                                     "conductor_name",
+                                     "media",
+                                     "catalog",
+                                     "copyright",
+                                     "publisher",
+                                     "year",
+                                     "date",
+                                     "album_number",
+                                     "album_total",
+                                     "comment"})}
+
+        for c in metadata_choices:
+            for m in c:
+                for (attr, field) in m.empty_fields():
+                    if attr in album_fields:
+                        setattr(m, attr, album_fields[attr])
+
+    # populate any remaining metadata fields
+    # with those from cuesheet, if any
+    cuesheet_metadata = cuesheet.get_metadata()
+    for c in metadata_choices:
+        for (track_metadata,
+             sheet_track) in zip(c[1:] if preserve_pre_gap else c, cuesheet):
+            sheet_track_metadata = sheet_track.get_metadata()
+            for (attr, field) in track_metadata.empty_fields():
+                if ((sheet_track_metadata is not None) and
+                    (getattr(sheet_track_metadata, attr) is not None)):
+                    setattr(track_metadata,
+                            attr,
+                            getattr(sheet_track_metadata, attr))
+                elif ((cuesheet_metadata is not None) and
+                      (getattr(cuesheet_metadata, attr) is not None)):
+                    setattr(track_metadata,
+                            attr,
+                            getattr(cuesheet_metadata, attr))
+
+    # update MetaData with command-line album-number/total, if given
+    if options.album_number != 0:
+        for c in metadata_choices:
+            for m in c:
+                m.album_number = options.album_number
+
+    if options.album_total != 0:
+        for c in metadata_choices:
+            for m in c:
+                m.album_total = options.album_total
+
+    input_filenames = \
+        [input_filename] * (output_track_count + (1 if preserve_pre_gap else 0))
+
+    # decide which metadata and output options to use when splitting tracks
+    if options.interactive:
+        track_labels = [_.LAB_TRACK_X_OF_Y % (i, output_track_count)
+                        for i in range(0 if preserve_pre_gap else 1,
+                                       output_track_count + 1)]
+
+        # pick choice using interactive widget
+        output_widget = audiotools.ui.OutputFiller(
+            track_labels=track_labels,
+            metadata_choices=metadata_choices,
+            input_filenames=input_filenames,
+            output_directory=options.dir,
+            format_string=(options.format if
+                           (options.format is not None) else
+                           audiotools.FILENAME_FORMAT),
+            output_class=AudioType,
+            quality=options.quality,
+            completion_label=_.LAB_TRACKSPLIT_APPLY)
+
+        loop = audiotools.ui.urwid.MainLoop(
+            output_widget,
+            audiotools.ui.style(),
+            screen=audiotools.ui.Screen(),
+            unhandled_input=output_widget.handle_text,
+            pop_ups=True)
+        try:
+            loop.run()
+            msg.ansi_clearscreen()
+        except (termios.error, IOError):
+            msg.error(_.ERR_TERMIOS_ERROR)
+            msg.info(_.ERR_TERMIOS_SUGGESTION)
+            msg.info(audiotools.ui.xargs_suggestion(sys.argv))
+            sys.exit(1)
+
+        if not output_widget.cancelled():
+            output_tracks = list(output_widget.output_tracks())
+        else:
+            sys.exit(0)
+    else:
+        # pick choice without using GUI
+        try:
+            output_tracks = list(
+                audiotools.ui.process_output_options(
+                    metadata_choices=metadata_choices,
+                    input_filenames=input_filenames,
+                    output_directory=options.dir,
+                    format_string=options.format,
+                    output_class=AudioType,
+                    quality=options.quality,
+                    msg=msg,
+                    use_default=options.use_default))
+        except audiotools.UnsupportedTracknameField as err:
+            err.error_msg(msg)
+            sys.exit(1)
+        except (audiotools.InvalidFilenameFormat,
+                audiotools.OutputFileIsInput,
+                audiotools.DuplicateOutputFile) as err:
+            msg.error(err)
+            sys.exit(1)
+
+    # perform actual track splitting and tagging
+    jobs = zip(cuesheet_offsets, cuesheet_lengths, output_tracks)
+
+    queue = audiotools.ExecProgressQueue(msg)
+
+    if audiofile.seekable():
+        for (offset, length, (output_class,
+                              output_filename,
+                              output_quality,
+                              output_metadata)) in jobs:
+            try:
+                audiotools.make_dirs(str(output_filename))
+            except OSError as err:
+                msg.os_error(err)
+                sys.exit(1)
+
+            queue.execute(
+                function=split,
+                progress_text=output_filename.__unicode__(),
+                completion_output=_.LAB_ENCODE % {
+                    "source": audiotools.Filename(audiofile.filename),
+                    "destination": output_filename},
+                source_audiofile=audiofile,
+                destination_filename=output_filename,
+                destination_class=output_class,
+                compression=output_quality,
+                metadata=output_metadata,
+                pcm_frames_offset=int(offset * audiofile.sample_rate()),
+                total_pcm_frames=int(length * audiofile.sample_rate()))
+
+        try:
+            encoded_tracks = map(audiotools.open,
+                                 queue.run(options.max_processes))
+        except audiotools.EncodingError as err:
+            msg.error(err)
+            sys.exit(1)
+        except KeyboardInterrupt:
+            msg.error(_.ERR_CANCELLED)
+            sys.exit(1)
+    else:
+        import tempfile
+
+        # if input file isn't seekable
+
+        # decode it into a single PCM blob of binary data
+        temp_blob = tempfile.NamedTemporaryFile()
+        cache_progress = audiotools.SingleProgressDisplay(
+            msg, _.LAB_CACHING_FILE)
+        try:
+            audiotools.transfer_framelist_data(
+                audiotools.PCMReaderProgress(
+                    audiofile.to_pcm(),
+                    audiofile.total_frames(),
+                    cache_progress.update),
+                temp_blob.write)
+        except audiotools.DecodingError as err:
+            cache_progress.clear_rows()
+            msg.error(err)
+            temp_blob.close()
+            sys.exit(1)
+        except KeyboardInterrupt:
+            cache_progress.clear_rows()
+            msg.error(_.ERR_CANCELLED)
+            temp_blob.close()
+            sys.exit(1)
+
+        cache_progress.clear_rows()
+        temp_blob.flush()
+
+        # split the blob using multiple jobs
+        for (offset, length, (output_class,
+                              output_filename,
+                              output_quality,
+                              output_metadata)) in jobs:
+            try:
+                audiotools.make_dirs(str(output_filename))
+            except OSError as err:
+                msg.os_error(err)
+                temp_blob.close()
+                sys.exit(1)
+
+            queue.execute(
+                function=split_raw,
+                progress_text=output_filename.__unicode__(),
+                completion_output=_.LAB_ENCODE % {
+                    "source": audiotools.Filename(audiofile.filename),
+                    "destination": output_filename},
+                source_filename=temp_blob.name,
+                sample_rate=audiofile.sample_rate(),
+                channels=audiofile.channels(),
+                channel_mask=int(audiofile.channel_mask()),
+                bits_per_sample=audiofile.bits_per_sample(),
+                destination_filename=output_filename,
+                destination_class=output_class,
+                compression=output_quality,
+                metadata=output_metadata,
+                pcm_frames_offset=int(offset * audiofile.sample_rate()),
+                total_pcm_frames=int(length * audiofile.sample_rate()))
+
+        try:
+            encoded_tracks = map(audiotools.open,
+                                 queue.run(options.max_processes))
+        except audiotools.EncodingError as err:
+            msg.error(err)
+            temp_blob.close()
+            sys.exit(1)
+        except KeyboardInterrupt:
+            msg.error(_.ERR_CANCELLED)
+            temp_blob.close()
+            sys.exit(1)
+
+        # then delete the blob when finished
+        temp_blob.close()
+
+    # apply ReplayGain to split tracks, if requested
+    if (output_class.supports_replay_gain() and
+        (options.add_replay_gain if options.add_replay_gain is not None else
+         audiotools.ADD_REPLAYGAIN)):
+        rg_progress = audiotools.ReplayGainProgressDisplay(msg)
+        rg_progress.initial_message()
+        try:
+            # separate encoded files by album_name and album_number
+            for album in audiotools.group_tracks(encoded_tracks):
+                # add ReplayGain to groups of files
+                # belonging to the same album
+
+                audiotools.add_replay_gain(album, rg_progress.update)
+        except ValueError as err:
+            rg_progress.clear_rows()
+            msg.error(err)
+            sys.exit(1)
+        except KeyboardInterrupt:
+            rg_progress.clear_rows()
+            msg.error(_.ERR_CANCELLED)
+            sys.exit(1)
+        rg_progress.final_message()

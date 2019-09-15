@@ -1,0 +1,310 @@
+#!/usr/bin/python
+
+# Audio Tools, a module and set of tools for manipulating audio data
+# Copyright (C) 2007-2015  Brian Langenberger
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+import sys
+import time
+import select
+import os
+import tty
+import termios
+import audiotools
+import audiotools.ui
+import audiotools.player
+from audiotools.cdio import CDDAReader
+import audiotools.text as _
+
+if audiotools.ui.AVAILABLE:
+    urwid = audiotools.ui.urwid
+
+    class CDplayGUI(audiotools.ui.PlayerGUI):
+        def __init__(self, cddareader, track_numbers, metadata, audio_output):
+            """cddareader is a CDDAReader object
+
+            track_numbers is a list of track numbers to play
+
+            metadata is a dict of tracknum -> MetaData values
+
+            audio_output is an AudioOutput object"""
+
+            self.cddareader = cddareader
+            track_lengths = cddareader.track_lengths
+
+            audiotools.ui.PlayerGUI.__init__(
+                self,
+                audiotools.player.CDPlayer(
+                    cddareader=cddareader,
+                    audio_output=audio_output,
+                    next_track_callback=self.next_track),
+                [(metadata[track_number].track_name
+                  if (metadata[track_number].track_name is not None)
+                  else (u"track %2.2d" % (track_number)),
+                  track_lengths[track_number] // 44100,
+                  (track_number, metadata[track_number]))
+                 for track_number in track_numbers],
+                sum([track_lengths[track_number] for track_number in
+                     track_numbers]) // 44100)
+
+        def select_track(self, radio_button, new_state, user_data,
+                         auto_play=True):
+            if new_state:
+                (track_number, metadata) = user_data
+                track_lengths = self.cddareader.track_lengths
+
+                if metadata is not None:
+                    self.update_metadata(
+                        track_name=metadata.track_name,
+                        album_name=metadata.album_name,
+                        artist_name=metadata.artist_name,
+                        track_number=track_number,
+                        track_total=len(track_lengths),
+                        album_number=metadata.album_number,
+                        album_total=metadata.album_total,
+                        pcm_frames=track_lengths[track_number],
+                        channels=2,
+                        sample_rate=44100,
+                        bits_per_sample=16)
+                else:
+                    self.update_metadata(
+                        track_total=len(track_lengths),
+                        pcm_frames=track_lengths[track_number],
+                        channels=2,
+                        sample_rate=44100,
+                        bits_per_sample=16)
+
+                self.player.open(track_number)
+                if auto_play:
+                    self.player.play()
+                    self.play_pause_button.set_label(_.LAB_PAUSE_BUTTON)
+
+        def select_first_track(self):
+            self.select_track(None, True, (1, metadata[1]), False)
+
+    interactive_available = True
+else:
+    interactive_available = False
+
+
+class CDplayTTY(audiotools.ui.PlayerTTY):
+    def __init__(self, cddareader, track_list, audio_output):
+        """cddareader is a CDDAReader object
+
+        track_list is a list of track numbers in the order to be played
+
+        audio_output is an AudioOutput object"""
+
+        self.cddareader = cddareader
+        self.track_list = track_list
+        self.track_index = -1
+        audiotools.ui.PlayerTTY.__init__(
+            self,
+            audiotools.player.CDPlayer(
+                cddareader=cddareader,
+                audio_output=audio_output,
+                next_track_callback=self.next_track))
+
+    def previous_track(self):
+        if self.track_index > 0:
+            self.track_index -= 1
+            current_track_number = self.track_list[self.track_index]
+            self.set_metadata(
+                track_number=self.track_index + 1,
+                track_total=len(self.track_list),
+                channels=2,
+                sample_rate=44100,
+                bits_per_sample=16)
+            self.player.open(current_track_number)
+            self.player.play()
+
+    def next_track(self):
+        try:
+            self.track_index += 1
+            current_track_number = self.track_list[self.track_index]
+            self.set_metadata(
+                track_number=self.track_index + 1,
+                track_total=len(self.track_list),
+                channels=2,
+                sample_rate=44100,
+                bits_per_sample=16)
+            self.player.open(current_track_number)
+            self.player.play()
+        except IndexError:
+            self.playing_finished = True
+
+
+if (__name__ == '__main__'):
+    import argparse
+
+    parser = argparse.ArgumentParser(description=_.DESCRIPTION_CDPLAY)
+
+    parser.add_argument("--version",
+                        action="version",
+                        version="Python Audio Tools %s" % (audiotools.VERSION))
+
+    parser.add_argument("-I", "--interactive",
+                        action="store_true",
+                        default=False,
+                        dest="interactive",
+                        help=_.OPT_INTERACTIVE_OPTIONS)
+
+    parser.add_argument("-V", "--verbose",
+                        action="store",
+                        dest="verbosity",
+                        choices=audiotools.VERBOSITY_LEVELS,
+                        default=audiotools.DEFAULT_VERBOSITY,
+                        help=_.OPT_VERBOSE)
+
+    parser.add_argument("-o", "--output",
+                        dest="output",
+                        choices=[player.NAME for player in
+                                 audiotools.player.available_outputs()],
+                        default=[player.NAME for player in
+                                 audiotools.player.available_outputs()][0],
+                        help=_.OPT_OUTPUT_PLAY)
+
+    parser.add_argument("-c", "--cdrom",
+                        dest="cdrom",
+                        default=audiotools.DEFAULT_CDROM)
+
+    parser.add_argument("--shuffle",
+                        action="store_true",
+                        dest="shuffle",
+                        default=False,
+                        help="shuffle tracks")
+
+    lookup = parser.add_argument_group(_.OPT_CAT_CD_LOOKUP)
+
+    lookup.add_argument("-M", "--metadata-lookup",
+                        action="store_true",
+                        default=False,
+                        dest="metadata_lookup",
+                        help=_.OPT_METADATA_LOOKUP)
+
+    lookup.add_argument("--musicbrainz-server",
+                        dest="musicbrainz_server",
+                        default=audiotools.MUSICBRAINZ_SERVER,
+                        metavar="HOSTNAME")
+
+    lookup.add_argument("--musicbrainz-port",
+                        type=int,
+                        dest="musicbrainz_port",
+                        default=audiotools.MUSICBRAINZ_PORT,
+                        metavar="PORT")
+
+    lookup.add_argument("--no-musicbrainz",
+                        action="store_false",
+                        dest="use_musicbrainz",
+                        default=audiotools.MUSICBRAINZ_SERVICE,
+                        help=_.OPT_NO_MUSICBRAINZ)
+
+    lookup.add_argument("--freedb-server",
+                        dest="freedb_server",
+                        default=audiotools.FREEDB_SERVER,
+                        metavar="HOSTNAME")
+
+    lookup.add_argument("--freedb-port",
+                        type=int,
+                        dest="freedb_port",
+                        default=audiotools.FREEDB_PORT,
+                        metavar="PORT")
+
+    lookup.add_argument("--no-freedb",
+                        action="store_false",
+                        dest="use_freedb",
+                        default=audiotools.FREEDB_SERVICE,
+                        help=_.OPT_NO_FREEDB)
+
+    parser.add_argument("tracks",
+                        type=int,
+                        metavar="TRACK",
+                        nargs="*",
+                        help=_.OPT_TRACK_INDEX)
+
+    options = parser.parse_args()
+    msg = audiotools.Messenger(options.verbosity == "quiet")
+
+    if options.interactive and (not interactive_available):
+        msg.error(_.ERR_URWID_REQUIRED)
+        msg.output(_.ERR_GET_URWID1)
+        msg.output(_.ERR_GET_URWID2)
+        sys.exit(1)
+
+    try:
+        cddareader = CDDAReader(options.cdrom)
+    except IOError as err:
+        msg.error(_.ERR_INVALID_CDDA)
+        sys.exit(-1)
+
+    if len(options.tracks) == 0:
+        track_numbers = sorted(cddareader.track_offsets.keys())
+    else:
+        available_numbers = frozenset(cddareader.track_offsets.keys())
+        track_numbers = [t for t in options.tracks
+                         if t in available_numbers]
+
+    if options.shuffle:
+        import random
+
+        random.shuffle(track_numbers)
+
+    if options.interactive:
+        # a track_number -> MetaData dictionary
+        # where track_number typically starts from 1
+        metadata = {m.track_number: m for m in
+                    audiotools.cddareader_metadata_lookup(
+                        cddareader=cddareader,
+                        musicbrainz_server=options.musicbrainz_server,
+                        musicbrainz_port=options.musicbrainz_port,
+                        freedb_server=options.freedb_server,
+                        freedb_port=options.freedb_port,
+                        use_musicbrainz=options.use_musicbrainz,
+                        use_freedb=options.use_freedb)[0]}
+
+        cdplay = CDplayGUI(
+            cddareader=cddareader,
+            track_numbers=track_numbers,
+            metadata=metadata,
+            audio_output=audiotools.player.open_output(options.output))
+
+        if len(cddareader.track_offsets) > 0:
+            cdplay.select_first_track()
+
+        loop = urwid.MainLoop(cdplay,
+                              audiotools.ui.style(),
+                              screen=audiotools.ui.Screen(),
+                              unhandled_input=cdplay.handle_text,
+                              pop_ups=True)
+
+        loop.set_alarm_at(tm=time.time() + 1,
+                          callback=audiotools.ui.timer,
+                          user_data=cdplay)
+
+        try:
+            loop.run()
+            msg.ansi_clearscreen()
+        except (termios.error, IOError):
+            msg.error(_.ERR_TERMIOS_ERROR)
+            msg.info(_.ERR_TERMIOS_SUGGESTION)
+            msg.info(audiotools.ui.xargs_suggestion(sys.argv))
+            sys.exit(1)
+    else:
+        cdplay = CDplayTTY(
+            cddareader=cddareader,
+            track_list=track_numbers,
+            audio_output=audiotools.player.open_output(options.output))
+        sys.exit(cdplay.run(msg, sys.stdin))

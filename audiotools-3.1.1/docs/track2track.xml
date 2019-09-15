@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2007-2015  Brian Langenberger
+This work is licensed under the
+Creative Commons Attribution-Share Alike 3.0 United States License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+Creative Commons,
+171 Second Street, Suite 300,
+San Francisco, California, 94105, USA.
+-->
+<manpage>
+  <utility>track2track</utility>
+  <author>Brian Langenberger</author>
+  <section>1</section>
+  <name>convert audio tracks</name>
+  <title>Audio File Converter</title>
+  <synopsis>[OPTIONS] &lt;track 1&gt; [track 2] ...</synopsis>
+  <description>
+    track2track converts audio tracks from one format to another.
+  </description>
+  <options>
+    <option short="h" long="help">show a list of options and exit</option>
+    <option short="I" long="interactive">
+      edit metadata and encoding options in interactive mode
+      prior to converting tracks
+    </option>
+    <option short="V" long="verbose" arg="verbosity">
+      The level of output to display.
+      Choose between 'normal', 'quiet' and 'debug'.
+    </option>
+  </options>
+  <options category="conversion">
+    <option short="t" long="type" arg="type">
+      The audio format to convert the given tracks to.
+      For a list of available audio formats, try: -t help.
+    </option>
+    <option short="q" long="quality" arg="quality">
+      The desired quality of the converted tracks.
+      For a list of available quality modes for a given format, try: -q help
+    </option>
+    <option short="d" long="dir" arg="directory">
+      The target directory for the converted tracks.
+      If none is given, the current working directory is used.
+      If the target directory does not exist,
+      it will be created automatically.
+      This option is not compatible with -o
+    </option>
+    <option long="format" arg="string">
+      The format string to use for new filenames.
+      Template fields are replaced with metadata values when
+      new tracks are created.  All other text is left as-is.
+      If this option is omitted, a default format string is used.
+    </option>
+    <option short="o" long="output" arg="filename">
+      An explicit output filename for the converted track.
+      With this option, only a single input track is allowed.
+      It overrides the -d option and the default output filename.
+    </option>
+    <option short="j" long="joint" arg="processes">
+      The maximum number of tracks to convert at one time.
+      If one has multiple CPUs or CPU cores, allowing
+      track2track(1)
+      to use all of them simultaneously can greatly increase encoding speed.
+    </option>
+  </options>
+  <options category="Format">
+    <option long="sample-rate" arg="rate">
+     convert all output files to the given sample rate, in Hz
+   </option>
+   <option long="channels" arg="channels">
+     convert all output files to the given number of channels
+   </option>
+   <option long="bits-per-sample" arg="bits">
+     convert all output files to the given number of bits-per-sample
+   </option>
+  </options>
+  <options category="CD lookup">
+    <option short="M" long="metadata-lookup">
+      perform metadata lookup for converted tracks
+    </option>
+    <option long="musicbrainz-server" arg="hostname">
+      the MusicBrainz server name to query for metadata
+    </option>
+    <option long="musicbrainz-port" arg="port">
+      the MusicBrainz port to query for metadata
+    </option>
+    <option long="no-musicbrainz">
+      don't query MusicBrainz for metadata
+    </option>
+    <option long="freedb-server" arg="hostname">
+      the FreeDB server name to query for metadata
+    </option>
+    <option long="freedb-port" arg="port">
+      the FreeDB port to query for metadata
+    </option>
+    <option long="no-freedb">
+      don't query FreeDB for metadata
+    </option>
+    <option short="D" long="default">
+      When multiple metadata choices are available,
+      select the first one automatically.
+      This option has no effect when used with -I
+    </option>
+  </options>
+  <options category="metadata">
+    <option long="replay-gain">
+      add ReplayGain metadata to newly created tracks
+    </option>
+    <option long="no-replay-gain">
+      do not add ReplayGain metadata to newly created tracks
+    </option>
+  </options>
+  <examples>
+    <example>
+      <description>
+        Convert all the WAVE files in the current working directory to MP3s
+        at the default quality:
+      </description>
+      <command>track2track -t mp3 *.wav</command>
+    </example>
+    <example>
+      <description>
+        Convert all of the FLAC files in sourcedir to
+        Ogg Vorbis files and place them in targetdir:
+      </description>
+      <command>track2track -t ogg -d targetdir sourcedir/*.flac</command>
+    </example>
+    <example>
+      <description>
+        Convert all of the WAVE files in sourcedir to
+        FLAC files, 2 at a time and at the highest possible compression
+        (quality 8):
+      </description>
+      <command>track2track -t flac -j 2 -q 8 sourcedir/*.wav</command>
+    </example>
+  </examples>
+</manpage>

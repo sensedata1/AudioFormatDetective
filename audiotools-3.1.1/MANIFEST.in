@@ -1,0 +1,29 @@
+recursive-include audiotools *
+recursive-include docs *
+recursive-include src *
+recursive-include test *
+include audiotools-config
+include cdda2track
+include cddainfo
+include cddaplay
+include COPYING
+include coverdump
+include coverview
+include dvda2track
+include dvdainfo
+include INSTALL
+include Makefile
+include setup.py
+include TODO
+include track2cdda
+include track2track
+include trackcat
+include trackcmp
+include trackinfo
+include tracklength
+include tracklint
+include trackplay
+include trackrename
+include tracksplit
+include tracktag
+include trackverify

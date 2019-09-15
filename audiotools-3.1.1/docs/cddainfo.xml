@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2007-2015  Brian Langenberger
+This work is licensed under the
+Creative Commons Attribution-Share Alike 3.0 United States License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+Creative Commons,
+171 Second Street, Suite 300,
+San Francisco, California, 94105, USA.
+-->
+<manpage>
+  <utility>cddainfo</utility>
+  <author>Brian Langenberger</author>
+  <section>1</section>
+  <name>prints information about a compact disc</name>
+  <title>Compact Disc Information</title>
+  <synopsis>[OPTIONS]</synopsis>
+  <description>
+    cddainfo takes a compact disc device and writes information about the
+    current disc to standard output.
+    This includes the total number of tracks, the total length of the disc,
+    the FreeDB and MusicBrainz disc IDs, and the length/offset information
+    of each track.
+  </description>
+  <options>
+    <option short="h" long="help">show a list of options and exit</option>
+    <option short="c" long="cdrom" arg="cdrom">
+      the CD-ROM device to read CD information from
+    </option>
+  </options>
+</manpage>

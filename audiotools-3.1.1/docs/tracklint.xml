@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2007-2015  Brian Langenberger
+This work is licensed under the
+Creative Commons Attribution-Share Alike 3.0 United States License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+Creative Commons,
+171 Second Street, Suite 300,
+San Francisco, California, 94105, USA.
+-->
+<manpage>
+  <utility>tracklint</utility>
+  <author>Brian Langenberger</author>
+  <section>1</section>
+  <name>checks and fixes minor track metadata errors automatically</name>
+  <title>Track Checker</title>
+  <synopsis>[OPTIONS] &lt;track 1&gt; [track 2] ....</synopsis>
+  <description>
+    tracklint takes a list of audio tracks,
+    examines their metadata for common problems and suggests fixes for them.
+    If directories are given, tracklint searches them recursively
+    and suggests fixes for any audio tracks found.
+    tracklint can also perform any suggested metadata fixes if
+    requested, and undo any performed fixes if an undo database was
+    used.
+  </description>
+  <options>
+    <option short="h" long="help">show a list of options and exit</option>
+    <option long="fix">
+      perform tracklint's suggested fixes on the given audio tracks
+    </option>
+    <option short="V" long="verbose" arg="verbosity">
+      The level of output to display.
+      Choose between 'normal', 'quiet' and 'debug'.
+    </option>
+  </options>
+  <element name="fixes">
+    <p>The following fixes are performed on each track:</p>
+    <ul>
+      <li>
+        Leading zeroes are stripped from track number and album number fields.
+        For example, a track number value of "01"
+        is changed to "1".
+      </li>
+      <li>
+        If the track number field is between 100 and 999, the leading digit
+        becomes the album number and trailing two digits becomes
+        the track number.
+        For example, a track number value of "213"
+        results in an album number of "2" and a track number of
+        "13".
+      </li>
+      <li>
+        If the performer name is the same as the artist name,
+        the redundant performer name field is removed.
+      </li>
+      <li>
+        Leading or trailing whitespace is removed from fields.
+        For example, a track name value of "Some Title " becomes
+        "Some Title".
+      </li>
+      <li>
+        Empty fields are removed.
+      </li>
+      <li>
+        Embedded images with invalid metadata fields such as width or height
+        are fixed.
+      </li>
+      <li>
+        ID3v2 and ID3v1 tags are stripped from FLAC files.
+      </li>
+      <li>
+        FLAC files with misordered STREAMINFO blocks are reordered.
+      </li>
+      <li>
+        A WAVEFORMATEXTENSIBLE_CHANNEL_MASK tag is added to
+        multi-channel or 24 bits-per-sample FLAC files
+        if one isn't present in its metadata.
+      </li>
+    </ul>
+  </element>
+</manpage>

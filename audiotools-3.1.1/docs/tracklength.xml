@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2007-2015  Brian Langenberger
+This work is licensed under the
+Creative Commons Attribution-Share Alike 3.0 United States License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+Creative Commons,
+171 Second Street, Suite 300,
+San Francisco, California, 94105, USA.
+-->
+<manpage>
+  <utility>tracklength</utility>
+  <author>Brian Langenberger</author>
+  <section>1</section>
+  <name>prints the total length of all tracks</name>
+  <title>Track Length</title>
+  <synopsis>[OPTIONS] &lt;track 1&gt; [track 2] ...</synopsis>
+  <description>
+    tracklength takes a list of audio tracks and writes their total
+    length to standard output in hours:minutes:seconds format.
+    If directories are given, tracklength searches them recursively
+    and adds the length of any supported audio files found to the
+    total.
+  </description>
+  <options>
+    <option short="h" long="help">show a list of options and exit</option>
+  </options>
+</manpage>

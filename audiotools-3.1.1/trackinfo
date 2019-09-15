@@ -1,0 +1,215 @@
+#!/usr/bin/python
+
+# Audio Tools, a module and set of tools for manipulating audio data
+# Copyright (C) 2007-2015  Brian Langenberger
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+import os.path
+import audiotools
+import audiotools.text as _
+
+if (__name__ == '__main__'):
+    import argparse
+
+    parser = argparse.ArgumentParser(description=_.DESCRIPTION_TRACKINFO)
+
+    parser.add_argument("--version",
+                        action="version",
+                        version="Python Audio Tools %s" % (audiotools.VERSION))
+
+    parser.add_argument("-n", "--no-metadata",
+                        action="store_true",
+                        dest="no_metadata",
+                        default=False)
+
+    parser.add_argument("-L", "--low-level",
+                        action="store_true",
+                        dest="low_level",
+                        default=False)
+
+    parser.add_argument("-b",
+                        "--bitrate",
+                        action="store_true",
+                        dest="show_bitrate")
+
+    parser.add_argument("-%",
+                        "--percentage",
+                        action="store_true",
+                        dest="show_percentage")
+
+    parser.add_argument("-C", "--channel-assignment",
+                        action="store_true",
+                        dest="channel_assignment")
+
+    parser.add_argument("filenames",
+                        metavar="FILENAME",
+                        nargs="+",
+                        help=_.OPT_INPUT_FILENAME)
+
+    options = parser.parse_args()
+
+    msg = audiotools.Messenger()
+
+    for file in audiotools.open_files(options.filenames, messenger=msg):
+        length = int(file.seconds_length())
+        if options.show_bitrate:
+            try:
+                msg.output(
+                    _.LAB_TRACKINFO_BITRATE %
+                    {'bitrate': ((os.path.getsize(file.filename) * 8) //
+                                 2 ** 10) // length,
+                     'filename': audiotools.Filename(file.filename)})
+            except ZeroDivisionError:
+                msg.output(
+                    _.LAB_TRACKINFO_BITRATE %
+                    {'bitrate': 0,
+                     'filename': audiotools.Filename(file.filename)})
+        elif options.show_percentage:
+            try:
+                percentage = (float(os.path.getsize(file.filename) * 100) /
+                              (file.total_frames() * file.channels() *
+                               (file.bits_per_sample() // 8)))
+                msg.output(
+                    _.LAB_TRACKINFO_PERCENTAGE %
+                    {'percentage': int(round(percentage)),
+                     'filename': audiotools.Filename(file.filename)})
+            except ZeroDivisionError:
+                msg.output(_.LAB_TRACKINFO_PERCENTAGE %
+                           {'percentage': "0",
+                            'filename': audiotools.Filename(file.filename)})
+        else:
+            msg.output(
+                _.LAB_TRACKINFO_ATTRIBS %
+                {"minutes": length // 60,
+                 "seconds": length % 60,
+                 "channels": file.channels(),
+                 "rate": audiotools.khz(file.sample_rate()),
+                 "bits": file.bits_per_sample(),
+                 "filename": audiotools.Filename(file.filename)})
+
+        if not options.no_metadata:
+            metadata = file.get_metadata()
+            if not options.low_level:
+                if metadata is not None:
+                    msg.output(u"%s" % (metadata))
+                    msg.output(u"")
+                replay_gain = file.get_replay_gain()
+                if replay_gain is not None:
+                    table = audiotools.output_table()
+
+                    msg.output(_.LAB_TRACKINFO_REPLAYGAIN)
+                    row = table.row()
+                    row.add_column(_.LAB_TRACKINFO_TRACK_GAIN, "right")
+                    row.add_column(u" : ")
+                    row.add_column(u"%s dB" % (replay_gain.track_gain,))
+                    row = table.row()
+                    row.add_column(_.LAB_TRACKINFO_TRACK_PEAK, "right")
+                    row.add_column(u" : ")
+                    row.add_column(u"%f" % (replay_gain.track_peak))
+                    row = table.row()
+                    row.add_column(_.LAB_TRACKINFO_ALBUM_GAIN, "right")
+                    row.add_column(u" : ")
+                    row.add_column(u"%s dB" % (replay_gain.album_gain,))
+                    row = table.row()
+                    row.add_column(_.LAB_TRACKINFO_ALBUM_PEAK, "right")
+                    row.add_column(u" : ")
+                    row.add_column(u"%f" % (replay_gain.album_peak))
+
+                    for row in table.format(msg.output_isatty()):
+                        msg.output(row)
+                    msg.output(u"")
+                cuesheet = file.get_cuesheet()
+                if cuesheet is not None:
+                    msg.output(_.LAB_TRACKINFO_CUESHEET)
+                    lengths = {}  # track_number -> length fraction
+                    indexes = {}  # track_number -> {index_number -> offset}
+                    isrcs = {}    # track_number -> ISRC unicode
+                    index_numbers = set()
+                    for track in cuesheet:
+                        track_length = cuesheet.track_length(track.number())
+                        if track_length is not None:
+                            lengths[track.number()] = track_length
+                        else:
+                            lengths[track.number()] = \
+                                (file.seconds_length() -
+                                 track.index(1).offset())
+                        track_indexes = {}
+                        for index in track:
+                            track_indexes[index.number()] = index.offset()
+                            index_numbers.add(index.number())
+                        indexes[track.number()] = track_indexes
+
+                    index_numbers = sorted(list(index_numbers))
+
+                    table = audiotools.output_table()
+
+                    row = table.row()
+                    row.add_column(u"  ")
+                    row.add_column(_.LAB_TRACKINFO_CUESHEET_TRACK, "right")
+                    row.add_column(u"  ")
+                    row.add_column(_.LAB_TRACKINFO_CUESHEET_LENGTH, "right")
+                    for i in index_numbers:
+                        row.add_column(u"  ")
+                        row.add_column(
+                            _.LAB_TRACKINFO_CUESHEET_INDEX % (i), "right")
+
+                    for t in sorted(indexes.keys()):
+                        row = table.row()
+                        row.add_column(u"")
+                        row.add_column(u"%d" % (t), "right")
+                        row.add_column(u"")
+                        length = int(lengths[t])
+                        row.add_column(u"%d:%2.2d" % (length // 60,
+                                                      length % 60),
+                                       "right")
+                        track_indexes = indexes[t]
+                        for i in index_numbers:
+                            row.add_column(u"")
+                            if i in track_indexes:
+                                index = track_indexes[i]
+                                row.add_column(
+                                    u"%d:%2.2d.%2.2d" % (int(index) // 60,
+                                                         int(index) % 60,
+                                                         int(index * 75) % 75),
+                                    "right")
+                            else:
+                                row.add_column(u"")
+
+                    for row in table.format(msg.output_isatty()):
+                        msg.output(row)
+                    msg.output(u"")
+            else:
+                if metadata is not None:
+                    msg.output(metadata.raw_info())
+                    msg.output(u"")
+        if options.channel_assignment:
+            msg.output(_.LAB_TRACKINFO_CHANNELS)
+
+            channel_names = {attr: audiotools.ChannelMask.MASK_TO_NAME[mask]
+                             for (attr, mask) in
+                             audiotools.ChannelMask.SPEAKER_TO_MASK.items()}
+
+            if file.channel_mask().defined():
+                for (i, channel) in enumerate(file.channel_mask().channels()):
+                    msg.output(_.LAB_TRACKINFO_CHANNEL %
+                               {"channel_number": i + 1,
+                                "channel_name": channel_names[channel]})
+            else:
+                for i in range(file.channels()):
+                    msg.output(_.LAB_TRACKINFO_CHANNEL %
+                               {"channel_number": i + 1,
+                                "channel_name": _.LAB_TRACKINFO_UNDEFINED})

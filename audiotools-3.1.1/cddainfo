@@ -1,0 +1,119 @@
+#!/usr/bin/python
+
+# Audio Tools, a module and set of tools for manipulating audio data
+# Copyright (C) 2007-2015  Brian Langenberger
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+import os.path
+import sys
+import audiotools
+from audiotools.cdio import CDDAReader
+import audiotools.freedb
+import audiotools.musicbrainz
+import audiotools.accuraterip
+import audiotools.text as _
+
+
+if (__name__ == '__main__'):
+    import argparse
+
+    parser = argparse.ArgumentParser(description=_.DESCRIPTION_CDINFO)
+
+    parser.add_argument("--version",
+                        action="version",
+                        version="Python Audio Tools %s" % (audiotools.VERSION))
+
+    parser.add_argument("-c", "--cdrom",
+                        dest="cdrom",
+                        default=audiotools.DEFAULT_CDROM)
+
+    options = parser.parse_args()
+    msg = audiotools.Messenger()
+
+    try:
+        cdda = CDDAReader(options.cdrom)
+    except (ValueError, IOError) as err:
+        msg.error(err)
+        sys.exit(1)
+
+    offsets = cdda.track_offsets
+    lengths = cdda.track_lengths
+    total_length = cdda.last_sector + 150 + 1
+
+    table = audiotools.output_table()
+    row = table.row()
+    row.add_column(_.LAB_TOTAL_TRACKS, "right")
+    row.add_column(u" : ")
+    row.add_column(u"%d" % (max(offsets.keys())))
+
+    row = table.row()
+    row.add_column(_.LAB_TOTAL_LENGTH, "right")
+    row.add_column(u" : ")
+    row.add_column(_.LAB_TRACK_LENGTH_FRAMES % (total_length // 75 // 60,
+                                                total_length // 75 % 60,
+                                                total_length))
+
+    row = table.row()
+    row.add_column(_.LAB_FREEDB_ID, "right")
+    row.add_column(u" : ")
+    row.add_column(
+        audiotools.freedb.DiscID.from_cddareader(cdda).__unicode__())
+
+    row = table.row()
+    row.add_column(_.LAB_MUSICBRAINZ_ID, "right")
+    row.add_column(u" : ")
+    row.add_column(
+        audiotools.musicbrainz.DiscID.from_cddareader(cdda).__unicode__())
+
+    row = table.row()
+    row.add_column(_.LAB_ACCURATERIP_ID, "right")
+    row.add_column(u" : ")
+    row.add_column(
+        audiotools.accuraterip.DiscID.from_cddareader(cdda).__unicode__())
+
+    for row in table.format(sys.stdout.isatty()):
+        msg.output(row)
+
+    msg.output(u"")
+
+    table = audiotools.output_table()
+    row = table.row()
+    row.add_column(u"#")
+    row.add_column(u" ")
+    row.add_column(_.LAB_CDINFO_LENGTH)
+    row.add_column(u" ")
+    row.add_column(_.LAB_CDINFO_FRAMES)
+    row.add_column(u" ")
+    row.add_column(_.LAB_CDINFO_OFFSET)
+
+    row = table.divider_row([_.DIV, u" ", _.DIV, u" ", _.DIV, u" ", _.DIV])
+
+    for key in sorted(offsets.keys()):
+        track_length = lengths[key] // 588
+        row = table.row()
+        row.add_column(u"%d" % (key), "right")
+        row.add_column(u" ")
+        row.add_column(
+            _.LAB_TRACK_LENGTH % (track_length // 75 // 60,
+                                  track_length // 75 % 60), "right")
+        row.add_column(u" ")
+        row.add_column(u"%d" % (track_length), "right")
+        row.add_column(u" ")
+        row.add_column(u"%d" % ((offsets[key] // 588) + 150), "right")
+
+    for row in table.format(sys.stdout.isatty()):
+        msg.output(row)

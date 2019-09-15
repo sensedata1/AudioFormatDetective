@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2007-2015  Brian Langenberger
+This work is licensed under the
+Creative Commons Attribution-Share Alike 3.0 United States License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by-sa/3.0/us/ or send a letter to
+Creative Commons,
+171 Second Street, Suite 300,
+San Francisco, California, 94105, USA.
+-->
+<manpage>
+  <utility>trackrename</utility>
+  <author>Brian Langenberger</author>
+  <section>1</section>
+  <name>renames files based on metadata</name>
+  <title>Audio File Renamer</title>
+  <synopsis>[OPTIONS] &lt;track 1&gt; [track 2] ...</synopsis>
+  <description>
+    trackrename takes a list of audio files and
+    renames them based on external or internal metadata.
+  </description>
+  <options>
+    <option short="h" long="help">show a list of options and exit</option>
+    <option short="I" long="interactive">
+      edit format string in interactive mode prior to renaming tracks
+    </option>
+    <option long="format" arg="string">
+      The format string to use for new filenames.
+      Template fields are replaced with metadata values when
+      new tracks are created.  All other text is left as-is.
+      If this option is omitted, a default format string is used.
+    </option>
+    <option short="V" long="verbose" arg="verbosity">
+      The level of output to display.
+      Choose between 'normal', 'quiet' and 'debug'.
+    </option>
+  </options>
+  <examples>
+    <example>
+      <description>
+        Rename all of the FLAC files in the current directory based on
+        their FLAC tag metadata:
+      </description>
+      <command>
+        track2rename *.flac
+      </command>
+    </example>
+    <example>
+      <description>
+        Rename file.flac with a custom template:
+      </description>
+      <command>
+        trackrename
+        "--format=%(track_number)2.2d - %(album_name)s - %(track_name)s.%(suffix)s" file.flac
+      </command>
+    </example>
+  </examples>
+</manpage>

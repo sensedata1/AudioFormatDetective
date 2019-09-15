@@ -1,0 +1,641 @@
+#!/usr/bin/python
+
+# Audio Tools, a module and set of tools for manipulating audio data
+# Copyright (C) 2007-2015  Brian Langenberger
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+import sys
+import os
+import audiotools
+import audiotools.ui
+import audiotools.accuraterip
+from audiotools.cdio import CDDAReader
+import termios
+import audiotools.text as _
+
+PREVIOUS_TRACK_FRAMES = (5880 // 2)
+NEXT_TRACK_FRAMES = (5880 // 2)
+
+
+def merge_metadatas(metadatas):
+    if len(metadatas) == 0:
+        return audiotools.MetaData()
+    elif len(metadatas) == 1:
+        return metadatas[0]
+    else:
+        merged = metadatas[0]
+        for to_merge in metadatas[1:]:
+            merged = merged.intersection(to_merge)
+        return merged
+
+
+class AccurateRipReader(object):
+    def __init__(self, pcmreader, total_pcm_frames, is_first, is_last):
+        """pcmreader is a PCMReader object to wrap around
+
+        total_pcm_frames is the length of pcmreader,
+        not including previous and next track frames
+
+        is_first and is_last indicate the track's position in the stream"""
+
+        self.pcmreader = pcmreader
+
+        self.checksummer = audiotools.accuraterip.Checksum(
+            total_pcm_frames=total_pcm_frames,
+            sample_rate=pcmreader.sample_rate,
+            is_first=is_first,
+            is_last=is_last,
+            pcm_frame_range=PREVIOUS_TRACK_FRAMES + 1 + NEXT_TRACK_FRAMES,
+            accurateripv2_offset=PREVIOUS_TRACK_FRAMES)
+
+        self.sample_rate = pcmreader.sample_rate
+        self.channels = pcmreader.channels
+        self.channel_mask = pcmreader.channel_mask
+        self.bits_per_sample = pcmreader.bits_per_sample
+
+    def read(self, pcm_frames):
+        frame = self.pcmreader.read(pcm_frames)
+        self.checksummer.update(frame)
+        return frame
+
+    def close(self):
+        self.pcmreader.close()
+
+    def checksums_v1(self):
+        return self.checksummer.checksums_v1()
+
+    def checksums_v2(self):
+        return [self.checksummer.checksum_v2()]
+
+
+if (__name__ == '__main__'):
+    import argparse
+
+    parser = argparse.ArgumentParser(description=_.DESCRIPTION_CD2TRACK)
+
+    parser.add_argument("--version",
+                        action="version",
+                        version="Python Audio Tools %s" % (audiotools.VERSION))
+
+    parser.add_argument("-I", "--interactive",
+                        action="store_true",
+                        default=False,
+                        dest="interactive",
+                        help=_.OPT_INTERACTIVE_OPTIONS)
+
+    parser.add_argument("-V", "--verbose",
+                        dest="verbosity",
+                        choices=audiotools.VERBOSITY_LEVELS,
+                        default=audiotools.DEFAULT_VERBOSITY,
+                        help=_.OPT_VERBOSE)
+
+    parser.add_argument("-c", "--cdrom",
+                        dest="cdrom",
+                        default=audiotools.DEFAULT_CDROM)
+
+    parser.add_argument("-s", "--speed",
+                        type=int,
+                        dest="speed")
+
+    conversion = parser.add_argument_group(_.OPT_CAT_EXTRACTION)
+
+    conversion.add_argument(
+        "-t", "--type",
+        dest="type",
+        choices=sorted(list(t.NAME for t in audiotools.AVAILABLE_TYPES
+                            if t.supports_from_pcm()) + ["help"]),
+        help=_.OPT_TYPE,
+        default=audiotools.DEFAULT_TYPE)
+
+    conversion.add_argument("-q", "--quality",
+                            dest="quality",
+                            help=_.OPT_QUALITY)
+
+    conversion.add_argument("-d", "--dir",
+                            dest="dir",
+                            default=".",
+                            help=_.OPT_DIR)
+
+    conversion.add_argument("--format",
+                            default=None,
+                            dest="format",
+                            help=_.OPT_FORMAT)
+
+    lookup = parser.add_argument_group(_.OPT_CAT_CD_LOOKUP)
+
+    lookup.add_argument("-M", "--metadata-lookup",
+                        action="store_true",
+                        default=False,
+                        dest="metadata_lookup",
+                        help=_.OPT_METADATA_LOOKUP)
+
+    lookup.add_argument("--musicbrainz-server",
+                        dest="musicbrainz_server",
+                        default=audiotools.MUSICBRAINZ_SERVER,
+                        metavar="HOSTNAME")
+
+    lookup.add_argument("--musicbrainz-port",
+                        type=int,
+                        dest="musicbrainz_port",
+                        default=audiotools.MUSICBRAINZ_PORT,
+                        metavar="PORT")
+
+    lookup.add_argument("--no-musicbrainz",
+                        action="store_false",
+                        dest="use_musicbrainz",
+                        default=audiotools.MUSICBRAINZ_SERVICE,
+                        help=_.OPT_NO_MUSICBRAINZ)
+
+    lookup.add_argument("--freedb-server",
+                        dest="freedb_server",
+                        default=audiotools.FREEDB_SERVER,
+                        metavar="HOSTNAME")
+
+    lookup.add_argument("--freedb-port",
+                        type=int,
+                        dest="freedb_port",
+                        default=audiotools.FREEDB_PORT,
+                        metavar="PORT")
+
+    lookup.add_argument("--no-freedb",
+                        action="store_false",
+                        dest="use_freedb",
+                        default=audiotools.FREEDB_SERVICE,
+                        help=_.OPT_NO_FREEDB)
+
+    lookup.add_argument("-D", "--default",
+                        dest="use_default",
+                        action="store_true",
+                        default=False,
+                        help=_.OPT_DEFAULT)
+
+    metadata = parser.add_argument_group(_.OPT_CAT_METADATA)
+
+    metadata.add_argument("--album-number",
+                          dest="album_number",
+                          type=int,
+                          default=0,
+                          help=_.OPT_ALBUM_NUMBER)
+
+    metadata.add_argument("--album-total",
+                          dest="album_total",
+                          type=int,
+                          default=0,
+                          help=_.OPT_ALBUM_TOTAL)
+
+    # if adding ReplayGain is a lossless process
+    # (i.e. added as tags rather than modifying track data)
+    # add_replay_gain should default to True
+    # if not, add_replay_gain should default to False
+    # which is which depends on the track type
+    metadata.add_argument("--replay-gain",
+                          action="store_true",
+                          default=None,
+                          dest="add_replay_gain",
+                          help=_.OPT_REPLAY_GAIN)
+
+    metadata.add_argument("--no-replay-gain",
+                          action="store_false",
+                          default=None,
+                          dest="add_replay_gain",
+                          help=_.OPT_NO_REPLAY_GAIN)
+
+    parser.add_argument("tracks",
+                        type=int,
+                        metavar="TRACK",
+                        nargs="*",
+                        help=_.OPT_TRACK_INDEX)
+
+    options = parser.parse_args()
+
+    msg = audiotools.Messenger(options.verbosity == "quiet")
+
+    # ensure interactive mode is available, if selected
+    if options.interactive and (not audiotools.ui.AVAILABLE):
+        audiotools.ui.not_available_message(msg)
+        sys.exit(1)
+
+    # get the default AudioFile class we are converted to
+    if options.type == 'help':
+        audiotools.ui.show_available_formats(msg)
+        sys.exit(0)
+    else:
+        AudioType = audiotools.TYPE_MAP[options.type]
+
+    # ensure the selected compression is compatible with that class
+    if options.quality == 'help':
+        audiotools.ui.show_available_qualities(msg, AudioType)
+        sys.exit(0)
+    elif options.quality is None:
+        options.quality = audiotools.__default_quality__(AudioType.NAME)
+    elif options.quality not in AudioType.COMPRESSION_MODES:
+        msg.error(_.ERR_UNSUPPORTED_COMPRESSION_MODE %
+                  {"quality": options.quality,
+                   "type": AudioType.NAME})
+        sys.exit(1)
+
+    quality = options.quality
+    base_directory = options.dir
+
+    # get the CD-ROM reader
+    try:
+        cddareader = CDDAReader(options.cdrom, True)
+        track_offsets = cddareader.track_offsets
+        track_lengths = cddareader.track_lengths
+    except (IOError, ValueError) as err:
+        msg.error(_.ERR_INVALID_CDDA)
+        sys.exit(-1)
+
+    # only apply read_offset if cddareader is a physical drive
+    if not cddareader.is_cd_image:
+        try:
+            read_offset = audiotools.config.getint_default(
+                "System", "cdrom_read_offset", 0)
+        except ValueError:
+            read_offset = 0
+    else:
+        read_offset = 0
+
+    # set speed, if any
+    if options.speed is not None:
+        cddareader.set_speed(options.speed)
+
+    pre_gap_length = cddareader.track_offsets[1]
+
+    # check whether pre-gap data should be preserved, if any
+    if pre_gap_length > 0:
+        with audiotools.BufferedPCMReader(
+            audiotools.PCMReaderWindow(cddareader,
+                                       read_offset,
+                                       pre_gap_length,
+                                       forward_close=False)) as r:
+            # this could be optimized better
+            # but it is a rare and unusual case
+            preserve_pre_gap = set(r.read(pre_gap_length)) != {0}
+            if preserve_pre_gap:
+                track_offsets[0] = 0
+                track_lengths[0] = pre_gap_length
+    else:
+        preserve_pre_gap = False
+
+    # use CDDA object to query metadata services for metadata choices
+    try:
+        metadata_choices = audiotools.cddareader_metadata_lookup(
+            cddareader=cddareader,
+            musicbrainz_server=options.musicbrainz_server,
+            musicbrainz_port=options.musicbrainz_port,
+            freedb_server=options.freedb_server,
+            freedb_port=options.freedb_port,
+            use_musicbrainz=options.use_musicbrainz,
+            use_freedb=options.use_freedb)
+    except KeyboardInterrupt:
+        msg.ansi_clearscreen()
+        msg.error(_.ERR_CANCELLED)
+        sys.exit(1)
+
+    if preserve_pre_gap:
+        # prepend "track 0" track to start of list for each choice
+        for choice in metadata_choices:
+            track_0 = merge_metadatas(choice)
+            track_0.track_number = 0
+            choice.insert(0, track_0)
+
+    # update MetaData with command-line album-number/total, if given
+    if options.album_number != 0:
+        for c in metadata_choices:
+            for m in c:
+                m.album_number = options.album_number
+
+    if options.album_total != 0:
+        for c in metadata_choices:
+            for m in c:
+                m.album_total = options.album_total
+
+    # use CDDAReader object to perform AccurateRip lookup
+    try:
+        ar_result = audiotools.accuraterip.perform_lookup(
+            audiotools.accuraterip.DiscID.from_cddareader(cddareader))
+    except KeyboardInterrupt:
+        msg.ansi_clearline()
+        msg.error(_.ERR_CANCELLED)
+        sys.exit(1)
+
+    # determine tracks to be ripped
+    if len(options.tracks) == 0:
+        tracks_to_rip = list(sorted(track_offsets.keys()))
+    else:
+        tracks_to_rip = [t for t in options.tracks if
+                         t in track_offsets.keys()]
+
+    if len(tracks_to_rip) == 0:
+        # no tracks selected to rip, so do nothing
+        sys.exit(0)
+
+    # decide which metadata and output options use when extracting tracks
+    if options.interactive:
+        # pick options using interactive widget
+        output_widget = audiotools.ui.OutputFiller(
+            track_labels=[_.LAB_TRACK_X_OF_Y % (i, max(track_offsets.keys()))
+                          for i in tracks_to_rip],
+            metadata_choices=[[c for i, c in
+                              enumerate(choices, 0 if preserve_pre_gap else 1)
+                               if i in tracks_to_rip]
+                              for choices in metadata_choices],
+            input_filenames=[audiotools.Filename("track%2.2d.cdda.wav" % (i))
+                             for i in tracks_to_rip],
+            output_directory=options.dir,
+            format_string=(options.format if
+                           (options.format is not None) else
+                           audiotools.FILENAME_FORMAT),
+            output_class=AudioType,
+            quality=quality,
+            completion_label=_.LAB_CD2TRACK_APPLY)
+
+        loop = audiotools.ui.urwid.MainLoop(
+            output_widget,
+            audiotools.ui.style(),
+            screen=audiotools.ui.Screen(),
+            unhandled_input=output_widget.handle_text,
+            pop_ups=True)
+        try:
+            loop.run()
+            msg.ansi_clearscreen()
+        except (termios.error, IOError):
+            msg.error(_.ERR_TERMIOS_ERROR)
+            msg.info(_.ERR_TERMIOS_SUGGESTION)
+            msg.info(audiotools.ui.xargs_suggestion(sys.argv))
+            sys.exit(1)
+
+        if not output_widget.cancelled():
+            output_tracks = list(output_widget.output_tracks())
+        else:
+            sys.exit(0)
+    else:
+        # pick options without using GUI
+        try:
+            output_tracks = list(
+                audiotools.ui.process_output_options(
+                    metadata_choices=[
+                        [c for i, c in
+                         enumerate(choices, 0 if preserve_pre_gap else 1)
+                          if i in tracks_to_rip]
+                         for choices in metadata_choices],
+                    input_filenames=[
+                        audiotools.Filename("track%2.2d.cdda.wav" % (i))
+                        for i in tracks_to_rip],
+                    output_directory=options.dir,
+                    format_string=options.format,
+                    output_class=AudioType,
+                    quality=options.quality,
+                    msg=msg,
+                    use_default=options.use_default))
+        except audiotools.UnsupportedTracknameField as err:
+            err.error_msg(msg)
+            sys.exit(1)
+        except (audiotools.InvalidFilenameFormat,
+                audiotools.OutputFileIsInput,
+                audiotools.DuplicateOutputFile) as err:
+            msg.error(err)
+            sys.exit(1)
+
+    # perform actual ripping of tracks from CDDA
+    encoded = []
+    rip_log = {}
+    accuraterip_log_v1 = {}
+    accuraterip_log_v2 = {}
+    replay_gain = audiotools.ReplayGainCalculator(cddareader.sample_rate)
+
+    for (track_number,
+         index,
+         (output_class,
+          output_filename,
+          output_quality,
+          output_metadata)) in zip(tracks_to_rip,
+                                   range(1, len(tracks_to_rip) + 1),
+                                   output_tracks):
+        cddareader.reset_log()
+        track_offset = (track_offsets[track_number] +
+                        read_offset -
+                        PREVIOUS_TRACK_FRAMES)
+        track_length = track_lengths[track_number]
+
+        # seek to indicated starting offset
+        if track_offset > 0:
+            seeked_offset = cddareader.seek(track_offset)
+        else:
+            seeked_offset = cddareader.seek(0)
+
+        # make leading directories, if necessary
+        try:
+            audiotools.make_dirs(str(output_filename))
+        except OSError as err:
+            msg.os_error(err)
+            sys.exit(1)
+
+        # setup individual progress bar per track
+        progress = audiotools.SingleProgressDisplay(
+            msg, output_filename.__unicode__())
+
+        # perform extraction over an AccurateRip window
+        track_data = audiotools.PCMReaderWindow(
+            cddareader,
+            track_offset - seeked_offset,
+            PREVIOUS_TRACK_FRAMES + track_length + NEXT_TRACK_FRAMES)
+
+        # with AccurateRip calculated during extraction
+        accuraterip = AccurateRipReader(
+            track_data,
+            track_length,
+            track_number == min(track_offsets.keys()),
+            track_number == max(track_offsets.keys()))
+
+        try:
+            # encode output file itself
+            track = output_class.from_pcm(
+                str(output_filename),
+                replay_gain.to_pcm(
+                    audiotools.PCMReaderProgress(
+                        audiotools.PCMReaderWindow(
+                            accuraterip,
+                            PREVIOUS_TRACK_FRAMES,
+                            track_length,
+                            forward_close=False),
+                        track_length,
+                        progress.update)),
+                output_quality,
+                total_pcm_frames=track_length)
+            encoded.append(track)
+
+            # since the inner PCMReaderWindow only outputs part
+            # of the accuraterip reader, we need to ensure
+            # anything left over in accuraterip gets processed also
+            audiotools.transfer_data(accuraterip.read, lambda f: None)
+        except audiotools.EncodingError as err:
+            progress.clear_rows()
+            msg.error(_.ERR_ENCODING_ERROR % (output_filename,))
+            sys.exit(1)
+        except KeyboardInterrupt:
+            progress.clear_rows()
+            try:
+                os.unlink(str(output_filename))
+            except OSError:
+                pass
+            msg.error(_.ERR_CANCELLED)
+            sys.exit(1)
+
+        track.set_metadata(output_metadata)
+        progress.clear_rows()
+
+        rip_log[track_number] = cddareader.log()
+        accuraterip_log_v1[track_number] = accuraterip.checksums_v1()
+        accuraterip_log_v2[track_number] = accuraterip.checksums_v2()
+
+        msg.info(
+            audiotools.output_progress(
+                _.LAB_CD2TRACK_PROGRESS %
+                {"track_number": track_number,
+                 "filename": output_filename},
+                index, len(tracks_to_rip)))
+
+    # add ReplayGain to ripped tracks, if necessary
+    if (output_class.supports_replay_gain() and
+        (options.add_replay_gain if options.add_replay_gain is not None else
+         audiotools.ADD_REPLAYGAIN)):
+        for (track, (track_gain, track_peak,
+                     album_gain, album_peak)) in zip(encoded, replay_gain):
+            track.set_replay_gain(
+                audiotools.ReplayGain(track_gain=track_gain,
+                                      track_peak=track_peak,
+                                      album_gain=album_gain,
+                                      album_peak=album_peak))
+        else:
+            msg.info(_.RG_REPLAYGAIN_ADDED)
+
+    # display ripping log
+    msg.output(_.LAB_CD2TRACK_LOG)
+
+    table = audiotools.output_table()
+
+    header = table.row()
+    header.add_column(u"", colspan=1 + 7 * 2 + 1)
+    header.add_column(_.LAB_TRACKVERIFY_AR_VERSION1, "center", colspan=5)
+    header.add_column(u"")
+    header.add_column(_.LAB_TRACKVERIFY_AR_VERSION2, "center", colspan=5)
+
+    # header for terminals with more horizontal space
+    wide_header = [u" #",
+                   u"err",
+                   u"skip",
+                   u"atom",
+                   u"edge",
+                   u"drop",
+                   u"dup",
+                   u"drift",
+                   _.LAB_TRACKVERIFY_AR_CONFIDENCE,
+                   _.LAB_TRACKVERIFY_AR_OFFSET,
+                   _.LAB_TRACKVERIFY_AR_CHECKSUM,
+                   _.LAB_TRACKVERIFY_AR_CONFIDENCE,
+                   _.LAB_TRACKVERIFY_AR_OFFSET,
+                   _.LAB_TRACKVERIFY_AR_CHECKSUM]
+
+    # header for terminals limited to 80 columns
+    narrow_header = [u" #",
+                     u"err",
+                     u"skip",
+                     u"atom",
+                     u"edge",
+                     u"drop",
+                     u"dup",
+                     u"drift",
+                     _.LAB_TRACKVERIFY_AR_CONF,
+                     _.LAB_TRACKVERIFY_AR_OFFSET,
+                     _.LAB_TRACKVERIFY_AR_CHECKSUM,
+                     _.LAB_TRACKVERIFY_AR_CONF,
+                     _.LAB_TRACKVERIFY_AR_OFFSET,
+                     _.LAB_TRACKVERIFY_AR_CHECKSUM]
+
+    if (msg.output_isatty() and
+        (len(audiotools.output_text(u" ").join(
+             [audiotools.output_text(h) for h in wide_header])) <=
+         msg.terminal_size(sys.stdout.fileno())[1])):
+        header_list = wide_header
+    else:
+        header_list = narrow_header
+
+    header = table.row()
+    for (label, is_first) in [(label, i == 0) for (i, label) in
+                              enumerate(header_list)]:
+        if not is_first:
+            header.add_column(u" ")
+        header.add_column(label, "right")
+
+    table.divider_row([_.DIV] +
+                      [u" ", _.DIV] * (7 + 3 + 3))
+
+    for track_number in tracks_to_rip:
+        row = table.row()
+
+        # first output the filename
+        row.add_column(u"%d" % (track_number), "right")
+
+        # then output the 7 log fields
+        log = rip_log[track_number]
+        for key in ["readrr",
+                    "skip",
+                    "fixup_atom",
+                    "fixup_edge",
+                    "fixup_dropped",
+                    "fixup_duped",
+                    "drift"]:
+            row.add_column(u" ")
+            row.add_column(u"%d" % (log.get(key, 0)), "right")
+
+        (checksum_v2,
+         confidence_v2,
+         offset_v2) = audiotools.accuraterip.match_offset(
+            ar_result.get(track_number, []),
+            accuraterip_log_v2[track_number],
+            0)
+
+        (checksum_v1,
+         confidence_v1,
+         offset_v1) = audiotools.accuraterip.match_offset(
+            ar_result.get(track_number, []),
+            accuraterip_log_v1[track_number],
+            -PREVIOUS_TRACK_FRAMES)
+
+        # finally output the 6 AccurateRip fields
+        for (checksum,
+             confidence,
+             offset) in [(checksum_v1,
+                          confidence_v1,
+                          offset_v1),
+                         (checksum_v2,
+                          confidence_v2,
+                          offset_v2)]:
+            row.add_column(u"")
+            if (confidence is None) or (confidence < 0):
+                row.add_column(u"", "right")
+            else:
+                row.add_column(u"%d" % (confidence), "right")
+            row.add_column(u"")
+            row.add_column(u"%d" % (offset), "right")
+            row.add_column(u"")
+            row.add_column(u"%8.8X" % (checksum), "right")
+
+    for row in table.format(msg.output_isatty()):
+        msg.output(row)
