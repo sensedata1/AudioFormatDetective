@@ -1,7 +1,8 @@
 # AudioFormatDetective
 
 For a super easy way to run this just:
-Install Docker.
+
+Install Docker in whatever way you need to, then:
 ```
 mkdir ~/AJTEMP
 ```
