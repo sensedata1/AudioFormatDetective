@@ -2,9 +2,12 @@
 
 For a super easy way to run this just:
 Install Docker.
-
+```
 mkdir ~/AJTEMP
+```
+```
 docker run -v ~/AJTEMP:/AJTEMP -it sensedata1/audio-format-detective:latest
+```
 
 then drop a zip into ~/AJTEMP with a load of wav or mp3 files to see their formats.
 This utility is just for me to use as a review tool so will mark wavs which aren't 44.1khz and 16bit as incorrect, likewise for mp3s which aren't 320kbps. 
