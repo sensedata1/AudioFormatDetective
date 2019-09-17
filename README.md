@@ -1,4 +1,18 @@
 # AudioFormatDetective
+
+For a super easy way to run this just:
+Install Docker.
+
+mkdir ~/AJTEMP
+docker run -v ~/AJTEMP:/AJTEMP -it sensedata1/audio-format-detective:latest
+
+then drop a zip into ~/AJTEMP with a load of wav or mp3 files to see their formats.
+This utility is just for me to use as a review tool so will mark wavs which aren't 44.1khz and 16bit as incorrect, likewise for mp3s which aren't 320kbps. 
+
+This is also designed to detect the watermarks in the submissions I have to review, but one perk of that is the fact that you can drop wav in with speech and it will provide transcription too, although only the first 10 seconds. You can mess about with the source files (anything ending in .py) to change that. 
+
+
+
 Simple utility for reviewers
 Uses audiotools and eyed3 to evaluate the attributes of audio files uploaded to the music library and checks them against the prerequisites. 
 
@@ -11,6 +25,9 @@ Requires
  audiotools
  eyeD3
  zipFile
+ ffmpeg
+ 
+ amongst others
  
  
 
