@@ -5,6 +5,7 @@ import logging
 import os
 import shutil
 import time
+from pathlib import Path
 from zipfile import ZipFile
 import audiotools
 import eyed3
@@ -107,7 +108,7 @@ def process_audio_files(currentFile):
             bits = "  "
 
         # convert mp3 to wav for voice recognition
-        home = os.path.abspath("/")
+        home = str(Path.home())
         src = currentFile
         dst = os.path.join(home, "tempWav.wav")
         # convert wav to mp3
@@ -183,7 +184,7 @@ def process_audio_files(currentFile):
             # except Exception as ex:
             #     print("crap!")
             #     print(ex)
-            # LACout = ''
+            LACout = ''
         try:
             durationSecsWav = int(audiotools.open(currentFile).seconds_length())
             duration = str(datetime.timedelta(seconds=durationSecsWav))
@@ -273,8 +274,12 @@ if __name__ == "__main__":
     checker = "nozip"
     # Suppress warnings from eyeD3
     eyed3.log.setLevel("ERROR")
-
-    AJDownloadsFolder = os.path.abspath("/AJTEMP")
+    # Get AJ Downloads folder from user input
+    userFolder = input("Enter path to folder to use for downloads?..")
+    # Format the user input
+    tempVar = userFolder.replace("\\", "")
+    tempVar2 = tempVar.rstrip()
+    AJDownloadsFolder = os.path.abspath(tempVar2)
     os.chdir(AJDownloadsFolder)
     print("Downloads folder = " + AJDownloadsFolder)
     print("")
