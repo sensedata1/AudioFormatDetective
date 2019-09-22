@@ -1,7 +1,5 @@
 #!/usr/local/opt/python/libexec/bin/python
-#Macbook pro shebang
-#/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
-# Shebang for Studio Mac Pro #
+# Shebang for winbox #
 import datetime
 import logging
 import os
@@ -15,6 +13,7 @@ from pydub import AudioSegment
 import sys
 import soundfile as sf
 import wave
+from send2trash import send2trash
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -54,7 +53,12 @@ def unzip():
                             print('Extracting...')
                             print('Done!')
                             print("")
-                            os.remove(currentZipFile)
+                            try:
+                                zipArchive.close()
+                                print("removing zipfile: " + currentZipFile)
+                                os.remove(currentZipFile)
+                            except Exception as e:
+                                print(e)
 
 
                         except Exception as e:
@@ -111,7 +115,8 @@ def process_audio_files(currentFile):
             channels = ""
         try:
             durationSecs = mp3File.info.time_secs
-            duration = str(datetime.timedelta(seconds=durationSecs))
+            duration2 = str(datetime.timedelta(seconds=durationSecs))
+            duration = duration2.split(".")[0]
         except:
             duration = "***"
         # try:
@@ -134,11 +139,17 @@ def process_audio_files(currentFile):
                 audio = r.record(source, duration=10)
 
                 recognisedSpeech = str((r.recognize_google(audio)))
-                if "audio" in recognisedSpeech:
+                if recognisedSpeech.find("jungle") is not -1:
                     ch = red("WM")
-                if "jungle" in recognisedSpeech:
+                elif recognisedSpeech.find("audio") is not -1:
                     ch = red("WM")
-                if "audi" in recognisedSpeech:
+                elif "jungle" in str(recognisedSpeech):
+                    ch = red("WM")
+                elif "Jungle" in str(recognisedSpeech):
+                    ch = red("WM")
+                elif "audiojungle" in str(recognisedSpeech):
+                    ch = red("WM")
+                elif recognisedSpeech.find("audiojungle") is not -1:
                     ch = red("WM")
                 else:
                     ch = "  "
@@ -204,7 +215,6 @@ def process_audio_files(currentFile):
 
             frames = ob.getnframes()
             rate = ob.getframerate()
-            # durationSecsWav = datetime
             durationSecsWav = frames / float(rate)
 
             duration2 = str(datetime.timedelta(seconds=durationSecsWav))
@@ -217,19 +227,23 @@ def process_audio_files(currentFile):
                 audio = r.record(source, duration=10)
 
                 recognisedSpeech = str((r.recognize_google(audio)))
-
-                if "audio" in recognisedSpeech:
+                if recognisedSpeech.find("jungle") is not -1:
                     ch = red("WM")
-                if "jungle" in recognisedSpeech:
+                elif recognisedSpeech.find("audio") is not -1:
                     ch = red("WM")
-                if "audi" in recognisedSpeech:
+                elif "jungle" in str(recognisedSpeech):
+                    ch = red("WM")
+                elif "Jungle" in str(recognisedSpeech):
+                    ch = red("WM")
+                elif "audiojungle" in str(recognisedSpeech):
+                    ch = red("WM")
+                elif recognisedSpeech.find("audiojungle") is not -1:
                     ch = red("WM")
                 else:
                     ch = "  "
         except Exception as e:
 
             ch = "  "
-            wm = "nowm"
             recognisedSpeech = ''
         if sampleRate == 44100 and bits == 16 and channels == 2:  # and wm !="wmd":
             errorWav = green(" [ok]")
@@ -292,19 +306,23 @@ def os_walk():
 
 
 if __name__ == "__main__":
-    checker = "nozip"
     # Suppress warnings from eyeD3
     eyed3.log.setLevel("ERROR")
     # Get AJ Downloads folder from user input
-    userFolder = input("Enter path to folder to use for downloads?..")
+    desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+    userFolder = input("Drag your AJ downloads folder here and hit enter a couple of times..")
+    tempDir = Path(userFolder)
+    print(tempDir)
     # Format the user input
-    tempVar = userFolder.replace("\\", "")
-    tempVar2 = tempVar.rstrip()
-    AJDownloadsFolder = os.path.abspath(tempVar2)
+    # tempVar = userFolder.replace("\\", "")
+    # tempVar2 = tempVar.rstrip()
+    AJDownloadsFolder = tempDir
+    # AJDownloadsFolder = os.path.dirname(tempVar2)
+
     os.chdir(AJDownloadsFolder)
-    print("Downloads folder = " + AJDownloadsFolder)
+    print("Downloads folder = " + str(tempDir))
     print("")
-    print("Monitoring " + AJDownloadsFolder + "...")
+    print("Monitoring " + str(tempDir) + "...")
 
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
