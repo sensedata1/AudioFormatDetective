@@ -1,4 +1,6 @@
-#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+#!/usr/local/opt/python/libexec/bin/python
+#Macbook pro shebang
+#/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
 # Shebang for Studio Mac Pro #
 import datetime
 import logging
@@ -7,11 +9,12 @@ import shutil
 import time
 from pathlib import Path
 from zipfile import ZipFile
-import audiotools
 import eyed3
 import speech_recognition as sr
 from pydub import AudioSegment
 import sys
+import soundfile as sf
+import wave
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -74,6 +77,15 @@ def unzip():
                     print("Unzip failed, zipfile may be corrupt")
 
 
+def roundSeconds(dateTimeObject):
+    newDateTime = dateTimeObject
+
+    if newDateTime.microsecond >= 500000:
+        newDateTime = newDateTime + datetime.timedelta(seconds=1)
+
+    return newDateTime.replace(microsecond=0)
+
+
 def process_audio_files(currentFile):
     # currentFile = fileList
     eyed3.log.setLevel("ERROR")
@@ -102,10 +114,10 @@ def process_audio_files(currentFile):
             duration = str(datetime.timedelta(seconds=durationSecs))
         except:
             duration = "***"
-        try:
-            bits = (audiotools.open(currentFile).bits_per_sample())
-        except:
-            bits = "  "
+        # try:
+        #     bits = (audiotools.open(currentFile).bits_per_sample())
+        # except:
+        bits = "  "
 
         # convert mp3 to wav for voice recognition
         home = str(Path.home())
@@ -153,21 +165,24 @@ def process_audio_files(currentFile):
     # Look for wav files and evaluate
     if currentFile.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not currentFile.startswith(".") \
             and os.path.isfile(currentFile):
-        # currentFile = os.path.join(directory, file)
+        ob = wave.open(currentFile, mode='r')
         try:
-            sampleRate = (audiotools.open(currentFile).sample_rate())
+            sampleRate = ob.getframerate()
             ch = "ch"
             gap = "      "
         except:
-            sampleRate = "BitDepth Unsupported"
+            sampleRate = "Samplerate unsupported"
             gap = ""
             ch = ""
         try:
-            bits = (audiotools.open(currentFile).bits_per_sample())
+            ob2 = sf.SoundFile(currentFile)
+            subtype = ob2.subtype
+            pre_bits = str(subtype[-2:])
+            bits = int(pre_bits)
         except:
             bits = ""
         try:
-            channels = int(audiotools.open(currentFile).channels())
+            channels = ob.getnchannels()
         except:
             channels = ""
             # try:
@@ -186,8 +201,14 @@ def process_audio_files(currentFile):
             #     print(ex)
             LACout = ''
         try:
-            durationSecsWav = int(audiotools.open(currentFile).seconds_length())
-            duration = str(datetime.timedelta(seconds=durationSecsWav))
+
+            frames = ob.getnframes()
+            rate = ob.getframerate()
+            # durationSecsWav = datetime
+            durationSecsWav = frames / float(rate)
+
+            duration2 = str(datetime.timedelta(seconds=durationSecsWav))
+            duration = duration2.split(".")[0]
         except:
             duration = "****"
         srVoiceTestWav = sr.AudioFile(currentFile)
@@ -225,15 +246,15 @@ def process_audio_files(currentFile):
             and os.path.isfile(currentFile):
         # currentFile = os.path.join(directory, file)
         try:
-            sampleRate = (audiotools.open(currentFile).sample_rate())
+            sampleRate = "Not a WAV file"
         except:
-            sampleRate = "Bitdepth Unsupported"
+            sampleRate = "Samplerate Unsupported"
         try:
-            bits = (audiotools.open(currentFile).bits_per_sample())
+            bits = " "
         except:
             bits = " "
         try:
-            channels = int(audiotools.open(currentFile).channels())
+            channels = " "
         except:
             channels = " "
         errorWav = red("[ERR]")
