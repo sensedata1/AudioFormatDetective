@@ -265,7 +265,7 @@ class Event(LoggingEventHandler):
         time.sleep(1)
         currentFileList = []
 
-        with Pool(processes=multiprocessing.cpu_count() - 8) as pool:
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
             for directory, subdirectories, files in os.walk(cwd):
                 for file in files:
                     tempCurrentFile = os.path.join(directory, file)
