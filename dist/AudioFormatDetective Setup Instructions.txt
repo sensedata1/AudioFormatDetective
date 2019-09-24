@@ -1,0 +1,32 @@
+AudioFormatDetective Installation Guide
+
+
+In the Windows search bar start typing "Powershell", when that appears at the top, 
+right click on it and "run as administrator"
+
+
+Copy this EXACT line and paste it into the Powershell terminal and hit ENTER:
+
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+
+
+You may be prompted to install .Net Framework, this is fine, all goodness. 
+
+Once that's finished, copy and paste this EXACT line into the powershell terminal and hit ENTER:
+
+choco install ffmpeg
+
+
+Then put AudioFormatDetective.exe on your Desktop and double click.
+You'll be asked to drag your AJ downloads folder onto the open terminal window, 
+this is so the app can know which folder to watch. 
+
+If all goes well you'll see "Monitoring folder....<your folder>
+
+
+After that you need to download a zip file into that folder, the app will unzip the archive, delete the zip, then evaluate the files.
+This version will only run again if there's a zip file in that folder. 
+
+Good luck!
+

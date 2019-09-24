@@ -3,12 +3,10 @@ abcde==1.0.0.dev1
 altgraph==0.16.1
 ansicolors==1.1.8
 argh==0.26.2
-audiotools==3.1.1
 colorama==0.4.1
 cycler==0.10.0
 eyeD3==0.8
 ez-setup==0.9
-ffmpeg==1.4
 future==0.17.1
 kiwisolver==1.0.1
 libmagic==1.0
