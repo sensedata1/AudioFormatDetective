@@ -13,7 +13,6 @@ from pydub import AudioSegment
 import sys
 import soundfile as sf
 import wave
-from send2trash import send2trash
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
