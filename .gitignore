@@ -1,0 +1,8 @@
+.idea/
+.idea/AudioFormatDetective.iml
+build.docker
+cron-touch
+Dockerfile
+docker-build-script.sh
+AudioFormatDetective6_IgnoreOld.py
+Test/AudioFormatDetective6_IgnoreOld.py

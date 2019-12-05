@@ -1,4 +1,6 @@
-#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+#!/Users/blord/work/src/github.com/sensedata1/AudioFormatDetective/venv/bin/python3.7
+
+# !/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
 # Shebang for Studio Mac Pro #
 import datetime
 import logging
@@ -18,6 +20,8 @@ from watchdog.observers import Observer
 from multiprocessing import Process, Pool
 import multiprocessing
 import sys
+import spleeter
+# from spleeter.separator import Separator
 
 # Let's define some colours
 black = lambda text: '\033[0;30m' + text + '\033[0m'
@@ -119,7 +123,9 @@ def process_audio_files(currentFile):
         srVoiceTestWav = sr.AudioFile(dst)
         try:
             with srVoiceTestWav as source:
+                # print("testing live update of code")
 
+                # r.adjust_for_ambient_noise(source)
                 audio = r.record(source, duration=10)
 
                 recognisedSpeech = str((r.recognize_google(audio)))

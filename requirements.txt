@@ -1,3 +1,4 @@
+spleeter
 soundfile
 abcde==1.0.0.dev1
 altgraph==0.16.1
