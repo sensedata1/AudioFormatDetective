@@ -33,7 +33,7 @@ python-daemon-3K==1.5.8
 python-dateutil==2.6.1
 python-magic==0.4.15
 pytz==2017.2
-PyYAML==5.1
+PyYAML==5.4
 scipy==1.2.0
 six==1.10.0
 SpeechRecognition==3.8.1
