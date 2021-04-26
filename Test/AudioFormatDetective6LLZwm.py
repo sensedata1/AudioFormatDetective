@@ -48,6 +48,8 @@ def clear():
 # This is the function which does the evaluation
 def detect():
     clear()
+    print('\n' * 50)
+    print("analysing...")
     print("")
     print("")
 
@@ -225,23 +227,23 @@ def detect():
                 except:
                     channels = ""
 
-                try:
-                    home = str(Path.home())
-                    LACpath = os.path.join(home, "LAC")
-                    a = [LACpath, currentFile]
-
-                    p = subprocess.Popen(a, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-                    p2 = subprocess.Popen(['grep', 'Result'], stdin=p.stdout,
-                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-                    sys.stdout.flush()
-                    for line in iter(p2.stdout.readline, b''):
-                        LACout = str(line)
-
-                except Exception as ex:
-                    print("crap!")
-                    print(ex)
-                    LACout = ''
+                # try:
+                #     home = str(Path.home())
+                #     LACpath = os.path.join(home, "LAC")
+                #     a = [LACpath, currentFile]
+                #
+                #     p = subprocess.Popen(a, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+                #     p2 = subprocess.Popen(['grep', 'Result'], stdin=p.stdout,
+                #                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                #
+                #     sys.stdout.flush()
+                #     for line in iter(p2.stdout.readline, b''):
+                #         LACout = str(line)
+                #
+                # except Exception as ex:
+                #     print("crap!")
+                #     print(ex)
+                # LACout = ''
                 try:
                     durationSecsWav = int(audiotools.open(currentFile).seconds_length())
                     duration = str(datetime.timedelta(seconds=durationSecsWav))
@@ -285,14 +287,14 @@ def detect():
                 else:
                     errorWav = red("[ERR]")
                     LACout = ""
-                if "Result: Upsampled" in LACout:
-                    gap = yellow("Upsamp")
-                if "Result: Upscaled" in LACout:
-                    gap = yellow("Upscal")
-                if "Result: Transcoded" in LACout:
-                    gap = yellow("Transc")
-                if "Result: Clean" in LACout:
-                    gap = blue(" Clean")
+                # if "Result: Upsampled" in LACout:
+                #     gap = yellow("Upsamp")
+                # if "Result: Upscaled" in LACout:
+                #     gap = yellow("Upscal")
+                # if "Result: Transcoded" in LACout:
+                #     gap = yellow("Transc")
+                # if "Result: Clean" in LACout:
+                #     gap = blue(" Clean")
                 # gap = LACout
 
                 ######################################################################################
@@ -347,10 +349,12 @@ def detect():
 
 # Watch folder and run main function when a file is downloaded into folder
 class Event(LoggingEventHandler):
-    def on_moved(self, event):
+    def on_created(self, event):
+        os.chdir(AJDownloadsFolder)
+        cwd = os.getcwd()
         print('\n' * 50)
         detect()
-        print("Finished!")
+        print("All done!")
 
 
 if __name__ == "__main__":
