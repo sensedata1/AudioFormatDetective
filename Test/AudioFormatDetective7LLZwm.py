@@ -81,7 +81,7 @@ def process_audio_files(currentFile):
     curPath, file = os.path.split(currentFile)
 
     if currentFile.endswith((".mp3", ".MP3", ".Mp3")) and not currentFile.startswith(".") \
-            and os.path.isfile(currentFile):
+            and os.path.isfile(currentFile) and not file.startswith("_I_"):
         try:
             mp3File = eyed3.load(currentFile)
         except:
@@ -151,9 +151,17 @@ def process_audio_files(currentFile):
         #           PRINT MP3 DATA                                                           #
         ######################################################################################
         print(errorMp3, sampleRate, bits, channels, ch, vbrTrueFalse, rate, duration[3:], file, red(recognisedSpeech))
+
+        # rename files so they're ignored on next pass
+        if os.path.isfile(currentFile):
+            cPath, cFile = os.path.split(currentFile)
+            cFile = "_I_" + cFile
+            newFileName = (os.path.join(cPath, cFile))
+            os.renames(currentFile, newFileName)
+
     # Look for wav files and evaluate
     if currentFile.endswith((".wav", ".WAV", ".WaV", ".wAV", ".WAv", ".Wav")) and not currentFile.startswith(".") \
-            and os.path.isfile(currentFile):
+            and os.path.isfile(currentFile) and not file.startswith("_I_"):
         # currentFile = os.path.join(directory, file)
         try:
             sampleRate = (audiotools.open(currentFile).sample_rate())
@@ -206,6 +214,13 @@ def process_audio_files(currentFile):
         #           PRINT WAV DATA                                                           #
         ######################################################################################
         print(errorWav, sampleRate, bits, channels, ch, gap, duration[3:], file, red(recognisedSpeech))
+
+        if os.path.isfile(currentFile):
+            cPath, cFile = os.path.split(currentFile)
+            cFile = "_I_" + cFile
+            newFileName = (os.path.join(cPath, cFile))
+            os.renames(currentFile, newFileName)
+
     # If any other audio file types are present mark as [ERR]
     if file.endswith((".aac", ".aiff", ".aif", ".flac", ".m4a", ".m4p")) \
             and os.path.isfile(currentFile):
@@ -231,11 +246,11 @@ def process_audio_files(currentFile):
 
 
 class Event(LoggingEventHandler):
-    def on_moved(self, event):
+    def on_created(self, event):
         # print(event)
         os.chdir(AJDownloadsFolder)
         cwd = os.getcwd()
-        unzip()
+        # unzip()
         clear()
         print('\n' * 50)
         print("analysing...")
