@@ -282,7 +282,8 @@ if __name__ == "__main__":
     # Suppress warnings from eyeD3
     eyed3.log.setLevel("ERROR")
     # Get AJ Downloads folder from user input
-    userFolder = input("Drag your AJ downloads folder here and press enter...")
+    # userFolder = input("Drag your AJ downloads folder here and press enter...")
+    userFolder = "/Volumes/ProjectsDrive/General Downloads/AJ TEMP DOWNLOADS"
     # Format the user input
     tempVar = userFolder.replace("\\", "")
     tempVar2 = tempVar.rstrip()
