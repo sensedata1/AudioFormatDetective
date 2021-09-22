@@ -26,7 +26,7 @@ progress==1.4
 pyaudiotools==3.2a2
 pydub==0.20.0
 pydub-ffmpeg-wav==0.23.0
-PyInstaller==3.4
+PyInstaller==3.6
 PyMySQL==0.7.11
 pyparsing==2.2.0
 python-daemon-3K==1.5.8
