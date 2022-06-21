@@ -16,7 +16,7 @@ macholib==1.11
 matplotlib==2.0.2
 mutagen==1.42.0
 mysqlclient-deps==0.0.2
-numpy==1.15.4
+numpy==1.22.0
 pathlib==1.0.1
 pathtools==0.1.2
 pefile==2018.8.8
